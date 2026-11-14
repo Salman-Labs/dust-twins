@@ -1,0 +1,1104 @@
+{
+ "sites": {
+  "insight": {
+   "top_score": 0.888,
+   "top10_mean": 0.858,
+   "shuffle": {
+    "null_p99": 0.731,
+    "null_best": 0.825,
+    "cells_above_null": 459,
+    "cells_scored": 2230,
+    "top10_above_null": 10
+   },
+   "split_years": {
+    "spearman": 0.67,
+    "top50_overlap": 0.34
+   },
+   "mars_self_test": {
+    "neighbour_percentile": 0.999
+   },
+   "pressure_sensitivity": {
+    "spearman": 0.99,
+    "top50_overlap": 0.78
+   },
+   "famous_in_top10": 0,
+   "rover": {
+    "n": 26,
+    "r": 0.942,
+    "pairs": [
+     {
+      "my": 34,
+      "bin": 10,
+      "rover": 1.294,
+      "orbit": 0.354
+     },
+     {
+      "my": 34,
+      "bin": 11,
+      "rover": 1.14,
+      "orbit": 0.338
+     },
+     {
+      "my": 35,
+      "bin": 0,
+      "rover": 0.74,
+      "orbit": 0.152
+     },
+     {
+      "my": 35,
+      "bin": 1,
+      "rover": 0.676,
+      "orbit": 0.137
+     },
+     {
+      "my": 35,
+      "bin": 2,
+      "rover": 0.633,
+      "orbit": 0.096
+     },
+     {
+      "my": 35,
+      "bin": 3,
+      "rover": 0.619,
+      "orbit": 0.088
+     },
+     {
+      "my": 35,
+      "bin": 4,
+      "rover": 0.612,
+      "orbit": 0.083
+     },
+     {
+      "my": 35,
+      "bin": 5,
+      "rover": 0.728,
+      "orbit": 0.131
+     },
+     {
+      "my": 35,
+      "bin": 6,
+      "rover": 0.755,
+      "orbit": 0.189
+     },
+     {
+      "my": 35,
+      "bin": 7,
+      "rover": 1.045,
+      "orbit": 0.357
+     },
+     {
+      "my": 35,
+      "bin": 8,
+      "rover": 1.14,
+      "orbit": 0.441
+     },
+     {
+      "my": 35,
+      "bin": 9,
+      "rover": 0.913,
+      "orbit": 0.278
+     },
+     {
+      "my": 35,
+      "bin": 10,
+      "rover": 0.93,
+      "orbit": 0.267
+     },
+     {
+      "my": 35,
+      "bin": 11,
+      "rover": 0.863,
+      "orbit": 0.247
+     },
+     {
+      "my": 36,
+      "bin": 0,
+      "rover": 0.685,
+      "orbit": 0.14
+     },
+     {
+      "my": 36,
+      "bin": 1,
+      "rover": 0.639,
+      "orbit": 0.099
+     },
+     {
+      "my": 36,
+      "bin": 2,
+      "rover": 0.622,
+      "orbit": 0.086
+     },
+     {
+      "my": 36,
+      "bin": 3,
+      "rover": 0.619,
+      "orbit": 0.087
+     },
+     {
+      "my": 36,
+      "bin": 4,
+      "rover": 0.577,
+      "orbit": 0.084
+     },
+     {
+      "my": 36,
+      "bin": 5,
+      "rover": 0.866,
+      "orbit": 0.358
+     },
+     {
+      "my": 36,
+      "bin": 6,
+      "rover": 0.834,
+      "orbit": 0.245
+     },
+     {
+      "my": 36,
+      "bin": 7,
+      "rover": 1.088,
+      "orbit": 0.401
+     },
+     {
+      "my": 36,
+      "bin": 8,
+      "rover": 1.075,
+      "orbit": 0.395
+     },
+     {
+      "my": 36,
+      "bin": 9,
+      "rover": 0.88,
+      "orbit": 0.271
+     },
+     {
+      "my": 36,
+      "bin": 10,
+      "rover": 1.223,
+      "orbit": 0.515
+     },
+     {
+      "my": 36,
+      "bin": 11,
+      "rover": 1.076,
+      "orbit": 0.324
+     }
+    ]
+   }
+  },
+  "opportunity": {
+   "top_score": 0.883,
+   "top10_mean": 0.851,
+   "shuffle": {
+    "null_p99": 0.731,
+    "null_best": 0.826,
+    "cells_above_null": 410,
+    "cells_scored": 2230,
+    "top10_above_null": 10
+   },
+   "split_years": {
+    "spearman": 0.619,
+    "top50_overlap": 0.3
+   },
+   "mars_self_test": {
+    "neighbour_percentile": 0.998
+   },
+   "pressure_sensitivity": {
+    "spearman": 0.982,
+    "top50_overlap": 0.76
+   },
+   "famous_in_top10": 0,
+   "rover": {
+    "n": 92,
+    "r": 0.786,
+    "pairs": [
+     {
+      "my": 26,
+      "bin": 11,
+      "rover": 0.915,
+      "orbit": 0.286
+     },
+     {
+      "my": 27,
+      "bin": 0,
+      "rover": 0.726,
+      "orbit": 0.17
+     },
+     {
+      "my": 27,
+      "bin": 1,
+      "rover": 0.589,
+      "orbit": 0.103
+     },
+     {
+      "my": 27,
+      "bin": 2,
+      "rover": 0.511,
+      "orbit": 0.097
+     },
+     {
+      "my": 27,
+      "bin": 3,
+      "rover": 0.466,
+      "orbit": 0.047
+     },
+     {
+      "my": 27,
+      "bin": 4,
+      "rover": 0.721,
+      "orbit": 0.144
+     },
+     {
+      "my": 27,
+      "bin": 5,
+      "rover": 0.862,
+      "orbit": 0.112
+     },
+     {
+      "my": 27,
+      "bin": 6,
+      "rover": 0.848,
+      "orbit": 0.157
+     },
+     {
+      "my": 27,
+      "bin": 7,
+      "rover": 1.197,
+      "orbit": 0.298
+     },
+     {
+      "my": 27,
+      "bin": 8,
+      "rover": 1.102,
+      "orbit": 0.422
+     },
+     {
+      "my": 27,
+      "bin": 9,
+      "rover": 0.838,
+      "orbit": 0.286
+     },
+     {
+      "my": 27,
+      "bin": 10,
+      "rover": 1.084,
+      "orbit": 0.311
+     },
+     {
+      "my": 27,
+      "bin": 11,
+      "rover": 0.77,
+      "orbit": 0.224
+     },
+     {
+      "my": 28,
+      "bin": 0,
+      "rover": 0.667,
+      "orbit": 0.1
+     },
+     {
+      "my": 28,
+      "bin": 1,
+      "rover": 0.586,
+      "orbit": 0.064
+     },
+     {
+      "my": 28,
+      "bin": 2,
+      "rover": 0.503,
+      "orbit": 0.046
+     },
+     {
+      "my": 28,
+      "bin": 3,
+      "rover": 0.477,
+      "orbit": 0.084
+     },
+     {
+      "my": 28,
+      "bin": 4,
+      "rover": 0.575,
+      "orbit": 0.085
+     },
+     {
+      "my": 28,
+      "bin": 5,
+      "rover": 0.711,
+      "orbit": 0.16
+     },
+     {
+      "my": 28,
+      "bin": 6,
+      "rover": 0.718,
+      "orbit": 0.189
+     },
+     {
+      "my": 28,
+      "bin": 7,
+      "rover": 0.881,
+      "orbit": 0.249
+     },
+     {
+      "my": 28,
+      "bin": 8,
+      "rover": 1.237,
+      "orbit": 0.387
+     },
+     {
+      "my": 28,
+      "bin": 9,
+      "rover": 3.372,
+      "orbit": 1.081
+     },
+     {
+      "my": 28,
+      "bin": 10,
+      "rover": 1.617,
+      "orbit": 0.469
+     },
+     {
+      "my": 28,
+      "bin": 11,
+      "rover": 0.867,
+      "orbit": 0.293
+     },
+     {
+      "my": 29,
+      "bin": 0,
+      "rover": 0.671,
+      "orbit": 0.145
+     },
+     {
+      "my": 29,
+      "bin": 1,
+      "rover": 0.588,
+      "orbit": 0.094
+     },
+     {
+      "my": 29,
+      "bin": 2,
+      "rover": 0.511,
+      "orbit": 0.086
+     },
+     {
+      "my": 29,
+      "bin": 3,
+      "rover": 0.503,
+      "orbit": 0.099
+     },
+     {
+      "my": 29,
+      "bin": 4,
+      "rover": 0.574,
+      "orbit": 0.111
+     },
+     {
+      "my": 29,
+      "bin": 5,
+      "rover": 0.853,
+      "orbit": 0.291
+     },
+     {
+      "my": 29,
+      "bin": 6,
+      "rover": 0.852,
+      "orbit": 0.241
+     },
+     {
+      "my": 29,
+      "bin": 7,
+      "rover": 1.128,
+      "orbit": 0.39
+     },
+     {
+      "my": 29,
+      "bin": 8,
+      "rover": 1.081,
+      "orbit": 0.432
+     },
+     {
+      "my": 29,
+      "bin": 9,
+      "rover": 0.792,
+      "orbit": 0.277
+     },
+     {
+      "my": 29,
+      "bin": 10,
+      "rover": 0.724,
+      "orbit": 0.219
+     },
+     {
+      "my": 29,
+      "bin": 11,
+      "rover": 0.812,
+      "orbit": 0.212
+     },
+     {
+      "my": 30,
+      "bin": 0,
+      "rover": 0.669,
+      "orbit": 0.137
+     },
+     {
+      "my": 30,
+      "bin": 1,
+      "rover": 0.594,
+      "orbit": 0.095
+     },
+     {
+      "my": 30,
+      "bin": 2,
+      "rover": 0.522,
+      "orbit": 0.091
+     },
+     {
+      "my": 30,
+      "bin": 3,
+      "rover": 0.521,
+      "orbit": 0.084
+     },
+     {
+      "my": 30,
+      "bin": 4,
+      "rover": 0.499,
+      "orbit": 0.08
+     },
+     {
+      "my": 30,
+      "bin": 5,
+      "rover": 0.683,
+      "orbit": 0.153
+     },
+     {
+      "my": 30,
+      "bin": 6,
+      "rover": 0.751,
+      "orbit": 0.211
+     },
+     {
+      "my": 30,
+      "bin": 7,
+      "rover": 0.917,
+      "orbit": 0.293
+     },
+     {
+      "my": 30,
+      "bin": 8,
+      "rover": 1.033,
+      "orbit": 0.339
+     },
+     {
+      "my": 30,
+      "bin": 9,
+      "rover": 0.842,
+      "orbit": 0.258
+     },
+     {
+      "my": 30,
+      "bin": 10,
+      "rover": 0.847,
+      "orbit": 0.263
+     },
+     {
+      "my": 30,
+      "bin": 11,
+      "rover": 0.958,
+      "orbit": 0.274
+     },
+     {
+      "my": 31,
+      "bin": 0,
+      "rover": 0.74,
+      "orbit": 0.154
+     },
+     {
+      "my": 31,
+      "bin": 1,
+      "rover": 0.606,
+      "orbit": 0.099
+     },
+     {
+      "my": 31,
+      "bin": 2,
+      "rover": 0.533,
+      "orbit": 0.084
+     },
+     {
+      "my": 31,
+      "bin": 3,
+      "rover": 0.5,
+      "orbit": 0.091
+     },
+     {
+      "my": 31,
+      "bin": 4,
+      "rover": 0.571,
+      "orbit": 0.093
+     },
+     {
+      "my": 31,
+      "bin": 5,
+      "rover": 0.694,
+      "orbit": 0.137
+     },
+     {
+      "my": 31,
+      "bin": 6,
+      "rover": 0.706,
+      "orbit": 0.196
+     },
+     {
+      "my": 31,
+      "bin": 7,
+      "rover": 0.981,
+      "orbit": 0.335
+     },
+     {
+      "my": 31,
+      "bin": 8,
+      "rover": 1.026,
+      "orbit": 0.347
+     },
+     {
+      "my": 31,
+      "bin": 9,
+      "rover": 0.824,
+      "orbit": 0.265
+     },
+     {
+      "my": 31,
+      "bin": 10,
+      "rover": 1.021,
+      "orbit": 0.304
+     },
+     {
+      "my": 31,
+      "bin": 11,
+      "rover": 0.855,
+      "orbit": 0.23
+     },
+     {
+      "my": 32,
+      "bin": 0,
+      "rover": 0.734,
+      "orbit": 0.136
+     },
+     {
+      "my": 32,
+      "bin": 1,
+      "rover": 0.58,
+      "orbit": 0.087
+     },
+     {
+      "my": 32,
+      "bin": 2,
+      "rover": 0.483,
+      "orbit": 0.076
+     },
+     {
+      "my": 32,
+      "bin": 3,
+      "rover": 0.533,
+      "orbit": 0.095
+     },
+     {
+      "my": 32,
+      "bin": 4,
+      "rover": 0.511,
+      "orbit": 0.086
+     },
+     {
+      "my": 32,
+      "bin": 5,
+      "rover": 0.655,
+      "orbit": 0.154
+     },
+     {
+      "my": 32,
+      "bin": 6,
+      "rover": 0.781,
+      "orbit": 0.206
+     },
+     {
+      "my": 32,
+      "bin": 7,
+      "rover": 1.334,
+      "orbit": 0.482
+     },
+     {
+      "my": 32,
+      "bin": 8,
+      "rover": 1.169,
+      "orbit": 0.369
+     },
+     {
+      "my": 32,
+      "bin": 9,
+      "rover": 0.916,
+      "orbit": 0.257
+     },
+     {
+      "my": 32,
+      "bin": 10,
+      "rover": 0.782,
+      "orbit": 0.249
+     },
+     {
+      "my": 32,
+      "bin": 11,
+      "rover": 0.988,
+      "orbit": 0.305
+     },
+     {
+      "my": 33,
+      "bin": 0,
+      "rover": 0.741,
+      "orbit": 0.149
+     },
+     {
+      "my": 33,
+      "bin": 1,
+      "rover": 0.616,
+      "orbit": 0.091
+     },
+     {
+      "my": 33,
+      "bin": 2,
+      "rover": 0.49,
+      "orbit": 0.09
+     },
+     {
+      "my": 33,
+      "bin": 3,
+      "rover": 0.49,
+      "orbit": 0.092
+     },
+     {
+      "my": 33,
+      "bin": 4,
+      "rover": 0.487,
+      "orbit": 0.081
+     },
+     {
+      "my": 33,
+      "bin": 5,
+      "rover": 0.565,
+      "orbit": 0.121
+     },
+     {
+      "my": 33,
+      "bin": 6,
+      "rover": 0.594,
+      "orbit": 0.151
+     },
+     {
+      "my": 33,
+      "bin": 7,
+      "rover": 0.852,
+      "orbit": 0.305
+     },
+     {
+      "my": 33,
+      "bin": 8,
+      "rover": 0.844,
+      "orbit": 0.309
+     },
+     {
+      "my": 33,
+      "bin": 9,
+      "rover": 0.717,
+      "orbit": 0.262
+     },
+     {
+      "my": 33,
+      "bin": 10,
+      "rover": 0.914,
+      "orbit": 0.28
+     },
+     {
+      "my": 33,
+      "bin": 11,
+      "rover": 0.937,
+      "orbit": 0.323
+     },
+     {
+      "my": 34,
+      "bin": 0,
+      "rover": 0.774,
+      "orbit": 0.175
+     },
+     {
+      "my": 34,
+      "bin": 1,
+      "rover": 0.609,
+      "orbit": 0.089
+     },
+     {
+      "my": 34,
+      "bin": 2,
+      "rover": 0.527,
+      "orbit": 0.081
+     },
+     {
+      "my": 34,
+      "bin": 3,
+      "rover": 0.498,
+      "orbit": 0.084
+     },
+     {
+      "my": 34,
+      "bin": 4,
+      "rover": 0.511,
+      "orbit": 0.077
+     },
+     {
+      "my": 34,
+      "bin": 5,
+      "rover": 0.699,
+      "orbit": 0.148
+     },
+     {
+      "my": 34,
+      "bin": 6,
+      "rover": 0.802,
+      "orbit": 1.146
+     }
+    ]
+   }
+  },
+  "spirit": {
+   "top_score": 0.884,
+   "top10_mean": 0.855,
+   "shuffle": {
+    "null_p99": 0.737,
+    "null_best": 0.824,
+    "cells_above_null": 485,
+    "cells_scored": 2230,
+    "top10_above_null": 10
+   },
+   "split_years": {
+    "spearman": 0.556,
+    "top50_overlap": 0.28
+   },
+   "mars_self_test": {
+    "neighbour_percentile": 0.998
+   },
+   "pressure_sensitivity": {
+    "spearman": 0.986,
+    "top50_overlap": 0.72
+   },
+   "famous_in_top10": 0,
+   "rover": {
+    "n": 40,
+    "r": 0.966,
+    "pairs": [
+     {
+      "my": 26,
+      "bin": 11,
+      "rover": 0.86,
+      "orbit": 0.264
+     },
+     {
+      "my": 27,
+      "bin": 0,
+      "rover": 0.618,
+      "orbit": 0.162
+     },
+     {
+      "my": 27,
+      "bin": 1,
+      "rover": 0.32,
+      "orbit": 0.076
+     },
+     {
+      "my": 27,
+      "bin": 2,
+      "rover": 0.313,
+      "orbit": 0.097
+     },
+     {
+      "my": 27,
+      "bin": 3,
+      "rover": 0.325,
+      "orbit": 0.113
+     },
+     {
+      "my": 27,
+      "bin": 4,
+      "rover": 0.577,
+      "orbit": 0.161
+     },
+     {
+      "my": 27,
+      "bin": 5,
+      "rover": 0.888,
+      "orbit": 0.206
+     },
+     {
+      "my": 27,
+      "bin": 6,
+      "rover": 0.648,
+      "orbit": 0.201
+     },
+     {
+      "my": 27,
+      "bin": 7,
+      "rover": 1.109,
+      "orbit": 0.417
+     },
+     {
+      "my": 27,
+      "bin": 8,
+      "rover": 0.987,
+      "orbit": 0.435
+     },
+     {
+      "my": 27,
+      "bin": 9,
+      "rover": 0.701,
+      "orbit": 0.293
+     },
+     {
+      "my": 27,
+      "bin": 10,
+      "rover": 0.693,
+      "orbit": 0.265
+     },
+     {
+      "my": 27,
+      "bin": 11,
+      "rover": 0.71,
+      "orbit": 0.19
+     },
+     {
+      "my": 28,
+      "bin": 0,
+      "rover": 0.534,
+      "orbit": 0.099
+     },
+     {
+      "my": 28,
+      "bin": 1,
+      "rover": 0.321,
+      "orbit": 0.086
+     },
+     {
+      "my": 28,
+      "bin": 2,
+      "rover": 0.293,
+      "orbit": 0.111
+     },
+     {
+      "my": 28,
+      "bin": 3,
+      "rover": 0.316,
+      "orbit": 0.106
+     },
+     {
+      "my": 28,
+      "bin": 4,
+      "rover": 0.351,
+      "orbit": 0.09
+     },
+     {
+      "my": 28,
+      "bin": 5,
+      "rover": 0.684,
+      "orbit": 0.206
+     },
+     {
+      "my": 28,
+      "bin": 6,
+      "rover": 0.533,
+      "orbit": 0.172
+     },
+     {
+      "my": 28,
+      "bin": 7,
+      "rover": 0.861,
+      "orbit": 0.265
+     },
+     {
+      "my": 28,
+      "bin": 8,
+      "rover": 0.917,
+      "orbit": 0.316
+     },
+     {
+      "my": 28,
+      "bin": 9,
+      "rover": 2.809,
+      "orbit": 1.114
+     },
+     {
+      "my": 28,
+      "bin": 10,
+      "rover": 1.502,
+      "orbit": 0.442
+     },
+     {
+      "my": 28,
+      "bin": 11,
+      "rover": 0.691,
+      "orbit": 0.246
+     },
+     {
+      "my": 29,
+      "bin": 0,
+      "rover": 0.563,
+      "orbit": 0.161
+     },
+     {
+      "my": 29,
+      "bin": 1,
+      "rover": 0.405,
+      "orbit": 0.102
+     },
+     {
+      "my": 29,
+      "bin": 2,
+      "rover": 0.389,
+      "orbit": 0.069
+     },
+     {
+      "my": 29,
+      "bin": 3,
+      "rover": 0.414,
+      "orbit": 0.081
+     },
+     {
+      "my": 29,
+      "bin": 4,
+      "rover": 0.425,
+      "orbit": 0.127
+     },
+     {
+      "my": 29,
+      "bin": 5,
+      "rover": 0.982,
+      "orbit": 0.22
+     },
+     {
+      "my": 29,
+      "bin": 6,
+      "rover": 0.727,
+      "orbit": 0.205
+     },
+     {
+      "my": 29,
+      "bin": 7,
+      "rover": 1.048,
+      "orbit": 0.386
+     },
+     {
+      "my": 29,
+      "bin": 8,
+      "rover": 1.057,
+      "orbit": 0.416
+     },
+     {
+      "my": 29,
+      "bin": 9,
+      "rover": 0.678,
+      "orbit": 0.238
+     },
+     {
+      "my": 29,
+      "bin": 10,
+      "rover": 0.801,
+      "orbit": 0.22
+     },
+     {
+      "my": 29,
+      "bin": 11,
+      "rover": 1.021,
+      "orbit": 0.255
+     },
+     {
+      "my": 30,
+      "bin": 0,
+      "rover": 0.587,
+      "orbit": 0.137
+     },
+     {
+      "my": 30,
+      "bin": 1,
+      "rover": 0.365,
+      "orbit": 0.091
+     },
+     {
+      "my": 30,
+      "bin": 2,
+      "rover": 0.376,
+      "orbit": 0.076
+     }
+    ]
+   }
+  },
+  "perseverance": {
+   "top_score": 0.905,
+   "top10_mean": 0.875,
+   "shuffle": {
+    "null_p99": 0.763,
+    "null_best": 0.848,
+    "cells_above_null": 382,
+    "cells_scored": 2230,
+    "top10_above_null": 10
+   },
+   "split_years": {
+    "spearman": 0.752,
+    "top50_overlap": 0.42
+   },
+   "mars_self_test": {
+    "neighbour_percentile": 0.995
+   },
+   "pressure_sensitivity": {
+    "spearman": 0.96,
+    "top50_overlap": 0.64
+   },
+   "famous_in_top10": 0,
+   "rover": null
+  },
+  "curiosity": {
+   "top_score": 0.888,
+   "top10_mean": 0.865,
+   "shuffle": {
+    "null_p99": 0.736,
+    "null_best": 0.824,
+    "cells_above_null": 521,
+    "cells_scored": 2230,
+    "top10_above_null": 10
+   },
+   "split_years": {
+    "spearman": 0.664,
+    "top50_overlap": 0.26
+   },
+   "mars_self_test": {
+    "neighbour_percentile": 0.997
+   },
+   "pressure_sensitivity": {
+    "spearman": 0.995,
+    "top50_overlap": 0.8
+   },
+   "famous_in_top10": 0,
+   "rover": null
+  }
+ },
+ "meta": {
+  "generated": "2026-11-14T22:40:53+00:00",
+  "bins": 12,
+  "storm_multiple": 1.5,
+  "weights": {
+   "season": 0.4,
+   "storminess": 0.2,
+   "haze": 0.2,
+   "variability": 0.2
+  },
+  "earth_years": "1999-2022",
+  "mars_years": "MY24-MY36",
+  "earth_cells_scored": 2230,
+  "earth_grid": "2.5 x 2 deg (subsampled)",
+  "mars_grid": "3 x 3 deg",
+  "mars_variable": "cdodtot (column dust optical depth above the local surface)"
+ }
+}

@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #06070b;
+  --ink: #f3ede4;
+  --dim: #9a958c;
+  --line: rgba(243, 237, 228, 0.12);
+  --panel: rgba(12, 13, 19, 0.72);
+  --mars: #ff8a5c;
+  --earth: #6ec5d8;
+  --dust: #ffb040;
+  --ok: #8fd694;
+  --warn: #f2c078;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-dim: var(--dim);
+  --color-line: var(--line);
+  --color-panel: var(--panel);
+  --color-mars: var(--mars);
+  --color-earth: var(--earth);
+  --color-dust: var(--dust);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
+}
+
+html, body { background: var(--bg); color: var(--ink); font-family: var(--font-geist-sans), system-ui, sans-serif; }
+body { overflow: hidden; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--dust); outline-offset: 2px; border-radius: 4px; }
+.panel { background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(14px); border-radius: 14px; }
+.label { font-size: 11.5px; font-weight: 500; color: var(--dim); }
+.font-serif { font-family: var(--font-serif), sans-serif; font-stretch: 118%; font-weight: 650; letter-spacing: -0.015em; }
+.num { font-family: var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; }
+.scroll::-webkit-scrollbar { width: 6px; } .scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.ring-rot { transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1); transform-origin: center; transform-box: view-box; }
+@media (prefers-reduced-motion: reduce) { .ring-rot { transition: none; } }
