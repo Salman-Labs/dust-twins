@@ -3,11 +3,13 @@
 // Layout: two fixed sidebars (Mars left, Earth right) around the scene. The chrome stays quiet;
 // the globes and the Dust Ring carry the colour.
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DustRing from "./DustRing";
 import Story from "./Story";
+import Guide from "./Guide";
+import { Ask, Challenge } from "./Planner";
 import type { Marker } from "./Scene";
-import { type Evidence, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
+import { type Evidence, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
@@ -25,9 +27,9 @@ const pct = (v: number) => `${Math.round(v * 100)}%`;
 const PlayIcon = () => <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden><path d="M3 1 L13 7 L3 13Z" fill="currentColor" /></svg>;
 const PauseIcon = () => <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden><rect x="2" y="1" width="3.5" height="12" fill="currentColor" /><rect x="8.5" y="1" width="3.5" height="12" fill="currentColor" /></svg>;
 
-function Section({ title, aside, children }: { title: string; aside?: React.ReactNode; children: React.ReactNode }) {
+function Section({ title, aside, guide, children }: { title: string; aside?: React.ReactNode; guide?: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-line px-5 py-5">
+    <section data-guide={guide} className="border-t border-line px-5 py-5">
       <div className="mb-3 flex items-baseline justify-between gap-3"><h3 className="text-[13px] font-medium text-dim">{title}</h3>{aside}</div>
       {children}
     </section>
@@ -138,7 +140,7 @@ function Calendar({ twin, site, month, setMonth }: { twin: Twin; site: Site; mon
         })}
       </div>
       <p className="mt-3 text-[13px] leading-5 text-dim">
-        <span className="text-ink">{MONTHS[month]}</span> lines up with Mars <span className="num text-ink">{lsRange(twin.mars_bin[month])}</span>, {marsSeason(twin.mars_bin[month]).toLowerCase()} at {site.place}. Pattern match that month <span className="num text-ink">{pct(twin.month_match[month])}</span>
+        <span className="text-ink">{MONTHS[month]}</span> lines up with Mars <span className="num text-ink">{lsRange(twin.mars_bin[month])}</span>, {marsSeason(twin.mars_bin[month]).toLowerCase()} at {site.place}. Pattern match that month <span className="num text-ink">{pct(twin.month_match[month])}</span>. It strayed far from its usual level in <span className="num text-ink">{twin.off_years[month]} of {twin.n_years}</span> years
       </p>
     </div>
   );
@@ -234,6 +236,12 @@ function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site
         <Check ok={e.pressure_sensitivity.spearman >= 0.8} title="Pressure choice">
           We use dust above the real ground. Switching to the 610 Pa-normalised product gives rank agreement <N>{e.pressure_sensitivity.spearman}</N> and keeps <N>{pct(e.pressure_sensitivity.top50_overlap)}</N> of the top 50
         </Check>
+        <Check ok={ev.storm_years.missed.length === 0 && ev.storm_years.extra.length === 0} title="Storm-year detector">
+          With no list of storms to go on, the detector flags Mars years <N>{ev.storm_years.found.map((y) => `MY${y}`).join(", ") || "none"}</N>. The known global dust storms are MY{ev.storm_years.known.join(", MY")} (2001, 2007 and 2018). On Earth it flags <N>{ev.storm_years.earth_flagged.length ? ev.storm_years.earth_flagged.join(", ") : "no year"}</N>: Earth has no planet-wide storm years, which is one way it cannot rehearse Mars. {ev.storm_years.note}
+        </Check>
+        <Check ok={e.same_regime_in_top10 >= 5} title="Dust regimes">
+          Grouping every cell on both planets by the shape of its dust year gives {ev.regimes.meta.k} regimes (cluster separation {ev.regimes.meta.silhouette[String(ev.regimes.meta.k)]}, which is loose: the regimes shade into each other). {site.place} sits in a regime that covers <N>{pct(ev.regimes.regimes[site.regime].mars_share)}</N> of Mars and only <N>{pct(ev.regimes.regimes[site.regime].earth_share)}</N> of Earth&apos;s dusty land. <N>{e.same_regime_in_top10} of 10</N> top twins fall in it
+        </Check>
         {e.rover && (
           <Check ok={e.rover.r >= 0.7} title="Rover ground truth">
             {site.name} measured the dust in its own sky. Across <N>{e.rover.n}</N> month-sized stretches, its readings and the orbital record at this cell correlate at <N>{e.rover.r}</N>. Each line is scaled to its own average because the two instruments see different wavelengths
@@ -265,6 +273,9 @@ export default function App() {
   const [showEv, setShowEv] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [layer, setLayer] = useState<"match" | "regime">("match");
+  const [guide, setGuide] = useState(false);
+  const pending = useRef<number | null>(null);
   const [story, setStory] = useState<number | null>(null);
   const [auto, setAuto] = useState(false);
 
@@ -272,13 +283,14 @@ export default function App() {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const q = new URLSearchParams(window.location.search);
     if (q.has("story")) { setStory(0); setAuto(q.get("story") === "auto"); }
+    else { try { if (!localStorage.getItem("dust-twins-seen")) setGuide(true); } catch { /* private mode: skip the first-visit guide */ } }
     fetch("/data/mars_sites.json").then((r) => r.json()).then((d) => setSites(d.sites)).catch(() => setErr("Could not load the data files"));
     fetch("/data/evidence.json").then((r) => r.json()).then(setEv).catch(() => {});
     fetch("/data/expectations.txt").then((r) => (r.ok ? r.text() : null)).then(setExpectations).catch(() => {});
   }, []);
   useEffect(() => {
     setFile(null); setTi(null);
-    fetch(`/data/twins_${siteId}.json`).then((r) => r.json()).then((d: TwinFile) => { setFile(d); setTi(0); }).catch(() => setErr("Could not load the twins"));
+    fetch(`/data/twins_${siteId}.json`).then((r) => r.json()).then((d: TwinFile) => { setFile(d); setTi(Math.min(pending.current ?? 0, d.twins.length - 1)); pending.current = null; }).catch(() => setErr("Could not load the twins"));
   }, [siteId]);
   useEffect(() => {
     if (!playing) return;
@@ -293,8 +305,12 @@ export default function App() {
     setPlaying(story === 3);
   }, [story]);
 
+  // the guide counts as seen once it has been closed, not merely shown
+  const closeGuide = () => { setGuide(false); try { localStorage.setItem("dust-twins-seen", "1"); } catch { /* ignore */ } };
+
   const site = sites.find((s) => s.id === siteId) ?? null;
   const twin = file && ti != null ? file.twins[ti] : null;
+  const regimes: Regime[] | null = ev?.regimes?.regimes ?? null;
 
   const marsMarkers: Marker[] = useMemo(() => sites.map((s) => ({ key: `m-${s.id}`, lat: s.lat, lon: s.lon, active: s.id === siteId, onClick: () => setSiteId(s.id) })), [sites, siteId]);
   const earthMarkers: Marker[] = useMemo(() => (file?.twins ?? []).map((t, i) => ({ key: `e-${siteId}-${i}`, lat: t.lat, lon: t.lon, active: i === ti, onClick: () => setTi(i) })), [file, ti, siteId]);
@@ -305,6 +321,7 @@ export default function App() {
     <div className="flex gap-2">
       <button onClick={() => { setAuto(false); setStory(0); }} className="row flex h-9 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-3.5 text-[13px] font-medium text-bg hover:bg-white"><PlayIcon />Play the story</button>
       <button onClick={() => setShowEv(true)} disabled={!ev || !site} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">Evidence</button>
+      <button onClick={() => setGuide(true)} className="row h-9 whitespace-nowrap rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">How it works</button>
     </div>
   );
 
@@ -316,7 +333,23 @@ export default function App() {
           <h1 className="text-[22px] font-semibold leading-none">Dust Twins</h1>
           <p className="mt-2 text-[13px] leading-5 text-dim">Where on Earth the sky carries dust like a Mars landing site, and in which months</p>
         </div>
-        <Section title="Mars landing site"><div className="-mx-3"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div></Section>
+        <Section title="Mars landing site" guide="site"><div className="-mx-3"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div></Section>
+        {layer === "regime" && regimes && site && (
+          <Section title="Dust regimes on both planets">
+            <p className="mb-3 text-[12px] leading-4 text-mute">Cells grouped by the shape of their dust year, whatever month it peaks in</p>
+            <ul className="grid gap-3">
+              {regimes.map((r) => (
+                <li key={r.id} className="grid grid-cols-[10px_1fr] gap-x-2.5">
+                  <span className="mt-1 h-2.5 w-2.5 rounded-[3px]" style={{ background: `rgb(${r.rgb.join(",")})` }} />
+                  <span>
+                    <span className={`block text-[13px] leading-4 ${r.id === site.regime ? "text-ink" : "text-dim"}`}>{r.name}{r.id === site.regime ? ` · ${site.name} is here` : ""}</span>
+                    <span className="num block text-[11px] leading-4 text-mute">Mars {pct(r.mars_share)} · Earth {pct(r.earth_share)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        )}
         {site && (
           <>
             <Section title="Its dust year">
@@ -342,13 +375,19 @@ export default function App() {
         <div className="absolute inset-0">
           <Scene marsMarkers={marsMarkers} earthMarkers={earthMarkers}
             marsFace={site ? { lat: site.lat, lon: site.lon } : null} earthFace={twin ? { lat: twin.lat, lon: twin.lon } : null}
-            overlay={file ? `/data/score_${siteId}.png` : null}
+            overlay={layer === "regime" ? "/data/regimes_earth.png" : file ? `/data/score_${siteId}.png` : null}
+            marsOverlay={layer === "regime" ? "/data/regimes_mars.png" : null} additive={layer === "match"}
             marsFrame={twin ? twin.mars_bin[month] : month} earthFrame={month} showHaze={playing}
             threadFrom={site ? `m-${site.id}` : null} threadTo={twin ? `e-${siteId}-${ti}` : null} reducedMotion={reduced} />
         </div>
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4 md:hidden">
           <h1 className="text-[18px] font-semibold">Dust Twins</h1>
           <div className="pointer-events-auto">{actions}</div>
+        </div>
+        <div className="absolute left-1/2 top-14 z-10 flex -translate-x-1/2 gap-1 rounded-lg bg-white/[0.06] p-1 max-md:hidden" role="group" aria-label="Map layer">
+          {([["match", "Match score"], ["regime", "Dust regimes"]] as const).map(([k, l]) => (
+            <button key={k} onClick={() => setLayer(k)} aria-pressed={layer === k} className={`row h-7 rounded-md px-3 text-[12px] ${layer === k ? "bg-white/[0.14] text-ink" : "text-dim hover:text-ink"}`}>{l}</button>
+          ))}
         </div>
         {site && (
           <div className="pointer-events-none absolute inset-x-0 top-6 grid grid-cols-2 text-center max-md:top-auto max-md:bottom-3">
@@ -365,7 +404,14 @@ export default function App() {
       {/* Earth sidebar */}
       <aside className="surface scroll z-10 md:overflow-y-auto md:border-l md:border-line" aria-label="Earth twins">
         <div className="flex items-center justify-between gap-3 px-5 pb-5 pt-5 max-md:hidden">{actions}</div>
-        <Section title={site ? `Earth twins of ${site.place}` : "Earth twins"}>
+        <Section title="Ask a planning question" aside={<span className="text-[11px] text-mute">SI · Gemini</span>}>
+          <Ask showing={twin && site ? `${twin.near}, ${twin.country} for ${site.name} · ${monthRange(twin.test_months)}` : null} onAction={(a) => {
+            const rank = Math.max(0, (a.rank ?? 1) - 1);
+            if (a.month && a.month >= 1 && a.month <= 12) setMonth(a.month - 1);
+            if (a.site === siteId) setTi(rank); else { pending.current = rank; setSiteId(a.site); }
+          }} />
+        </Section>
+        <Section title={site ? `Earth twins of ${site.place}` : "Earth twins"} guide="twins">
           <div className="-mx-3 mb-3 md:hidden"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div>
           <div className="-mx-3">{file ? <TwinList file={file} ti={ti} setTi={setTi} /> : <p className="px-3 py-6 text-[13px] text-dim">Matching…</p>}</div>
         </Section>
@@ -379,6 +425,11 @@ export default function App() {
                 <Fact ok={twin.beats_null}>{twin.beats_null ? "Beats the shuffled-season baseline" : "Does not beat the shuffled-season baseline"}</Fact>
                 <Fact ok={twin.robust >= 0.9}>In the top 50 under {pct(twin.robust)} of random weightings</Fact>
                 <Fact ok={!twin.famous}>{twin.famous ? `Already a known analog (${twin.famous})` : "Not one of the famous analog sites"}</Fact>
+                {regimes && (
+                  <Fact ok={twin.same_regime}>
+                    {twin.same_regime ? `Same dust regime as ${site.place}: ${regimes[twin.regime].name.toLowerCase()}` : `Different dust regime: ${regimes[twin.regime].name.toLowerCase()} here, ${regimes[site.regime].name.toLowerCase()} at ${site.place}`}
+                  </Fact>
+                )}
                 {site.cleaning !== "n/a" && (
                   <Fact ok={twin.wind_tag === site.cleaning}>
                     {twin.wind_tag === site.cleaning ? `Winds are ${twin.wind_tag}, as at ${site.name}'s site` : `Winds are ${twin.wind_tag} here; ${site.name}'s site was ${site.cleaning}`}
@@ -388,9 +439,13 @@ export default function App() {
               </ul>
             </Section>
 
-            <Section title="Candidate test window" aside={<span className="num text-[13px] text-dust">{monthRange(twin.test_months)}</span>}>
+            <Section title="Candidate test window" guide="calendar" aside={<span className="num text-[13px] text-dust">{monthRange(twin.test_months)}</span>}>
               <p className="mb-4 text-[13px] leading-5 text-dim">The months that line up with {site.place}&apos;s dustiest stretch. A hypothesis to check on site</p>
               <Calendar twin={twin} site={site} month={month} setMonth={setMonth} />
+            </Section>
+
+            <Section title="Argue against this twin" guide="challenge">
+              <Challenge site={site.id} rank={(ti ?? 0) + 1} twinName={twin.near} />
             </Section>
 
             <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
@@ -421,6 +476,7 @@ export default function App() {
       </aside>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}
+      {guide && <Guide onClose={closeGuide} onStory={() => { closeGuide(); setAuto(false); setStory(0); }} />}
       {showEv && ev && site && <EvidencePanel ev={ev} site={site} expectations={expectations} onClose={() => setShowEv(false)} />}
     </main>
   );

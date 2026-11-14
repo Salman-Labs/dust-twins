@@ -36,6 +36,8 @@ html, body { background: var(--bg); color: var(--ink); font-family: var(--font-s
 button { cursor: pointer; }
 button:disabled { cursor: default; opacity: 0.45; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
+/* text fields show focus on their own container ring, not a second outline */
+input:focus-visible, textarea:focus-visible { outline: none; }
 
 .surface { background: var(--surface); }
 .row { transition: background-color 150ms ease-out, color 150ms ease-out; }
@@ -49,3 +51,14 @@ button:disabled { cursor: default; opacity: 0.45; }
 @keyframes storyfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .story-fill { width: 100%; transform-origin: left; animation: storyfill linear both; }
 @media (prefers-reduced-motion: reduce) { .ring-rot { transition: none; } .kenburns, .story-fill { animation: none; } }
+
+/* guide: outline the section a step points at */
+.guide-flash { background: rgba(230, 192, 122, 0.09); box-shadow: inset 2px 0 0 var(--dust); }
+section[data-guide] { transition: background-color 500ms ease-out, box-shadow 500ms ease-out; }
+
+/* the agent's working: a spinner on the current step, a short fade-and-rise as each row lands */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 900ms linear infinite; }
+@keyframes rowin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.trace-row { animation: rowin 220ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .spin, .trace-row { animation: none; } }

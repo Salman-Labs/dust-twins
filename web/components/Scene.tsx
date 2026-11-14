@@ -26,12 +26,12 @@ function useTex(url: string, srgb = true) {
   return t;
 }
 
-function Overlay({ url, r }: { url: string; r: number }) {
+function Overlay({ url, r, additive = true }: { url: string; r: number; additive?: boolean }) {
   const t = useTex(url);
   return (
     <mesh>
       <sphereGeometry args={[r, 96, 48]} />
-      <meshBasicMaterial map={t} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+      <meshBasicMaterial map={t} transparent depthWrite={false} blending={additive ? THREE.AdditiveBlending : THREE.NormalBlending} />
     </mesh>
   );
 }
@@ -95,7 +95,7 @@ function Pin({ m, r, color, register }: { m: Marker; r: number; color: string; r
 
 function Globe(props: {
   tex: string; position: [number, number, number]; r: number; face: LL | null; glow: string; pin: string;
-  markers: Marker[]; overlay?: string | null; haze: string; hazeFrame: number; hazeOpacity: number;
+  markers: Marker[]; overlay?: string | null; additive?: boolean; haze: string; hazeFrame: number; hazeOpacity: number;
   register: (k: string, o: THREE.Object3D | null) => void; still: boolean;
 }) {
   const map = useTex(props.tex);
@@ -126,7 +126,7 @@ function Globe(props: {
               <meshStandardMaterial map={map} roughness={1} metalness={0} />
             </mesh>
             <Haze url={props.haze} r={props.r * 1.004} frame={props.hazeFrame} opacity={props.hazeOpacity} />
-            {props.overlay && <Suspense fallback={null}><Overlay url={props.overlay} r={props.r * 1.008} /></Suspense>}
+            {props.overlay && <Suspense fallback={null}><Overlay key={props.overlay} url={props.overlay} r={props.r * 1.008} additive={props.additive} /></Suspense>}
             {props.markers.map((m) => <Pin key={m.key} m={m} r={props.r} color={props.pin} register={props.register} />)}
           </group>
         </group>
@@ -165,7 +165,7 @@ function Rig({ children }: { children: (l: { mars: [number, number, number]; ear
 
 export default function Scene(props: {
   marsMarkers: Marker[]; earthMarkers: Marker[]; marsFace: LL | null; earthFace: LL | null;
-  overlay: string | null; marsFrame: number; earthFrame: number; showHaze: boolean;
+  overlay: string | null; marsOverlay?: string | null; additive?: boolean; marsFrame: number; earthFrame: number; showHaze: boolean;
   threadFrom: string | null; threadTo: string | null; reducedMotion: boolean;
 }) {
   const refs = useRef(new Map<string, THREE.Object3D>());
@@ -180,10 +180,10 @@ export default function Scene(props: {
           {(l) => (
             <>
               <Globe tex="/tex/mars.jpg" position={l.mars} r={l.r} face={props.marsFace} glow="#000" pin="#efe9df"
-                markers={props.marsMarkers} haze="/data/haze_mars.png" hazeFrame={props.marsFrame} hazeOpacity={props.showHaze ? 0.85 : 0}
+                markers={props.marsMarkers} overlay={props.marsOverlay} additive={false} haze="/data/haze_mars.png" hazeFrame={props.marsFrame} hazeOpacity={props.showHaze ? 0.85 : 0}
                 register={register} still={props.reducedMotion} />
               <Globe tex="/tex/earth.jpg" position={l.earth} r={l.r} face={props.earthFace} glow="#000" pin="#e6c07a"
-                markers={props.earthMarkers} overlay={props.overlay} haze="/data/haze_earth.png" hazeFrame={props.earthFrame}
+                markers={props.earthMarkers} overlay={props.overlay} additive={props.additive} haze="/data/haze_earth.png" hazeFrame={props.earthFrame}
                 hazeOpacity={props.showHaze ? 0.9 : 0} register={register} still={props.reducedMotion} />
             </>
           )}

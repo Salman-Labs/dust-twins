@@ -215,6 +215,132 @@ def top_overlap(a, b, k=50):
     return len(fa & fb) / k
 
 
+# ---------- dust regimes (unsupervised) ----------
+
+REGIME_RGB = [(230, 192, 122), (217, 105, 74), (141, 184, 204), (159, 196, 141), (190, 160, 214), (214, 163, 176), (150, 150, 150)]
+
+
+def regime_features(fp):
+    """Shift-invariant description of a dust year: the size of each seasonal harmonic, plus storminess
+    and year-to-year swing. Using harmonic magnitudes means two places with the same cycle in different
+    months look the same, which is what lets Mars Ls bins and Earth months share one space."""
+    amp = np.abs(np.fft.rfft(fp["shape"] - 1, axis=0))[1:6] / (N / 2)
+    return np.concatenate([amp, fp["storm"][None], fp["var"][None]]).reshape(7, -1).T
+
+
+def kmeans(X, k, rng, restarts=8, iters=60):
+    best = None
+    for _ in range(restarts):
+        c = X[rng.choice(len(X), k, replace=False)]
+        for _ in range(iters):
+            lab = ((X[:, None] - c[None]) ** 2).sum(-1).argmin(1)
+            new = np.stack([X[lab == j].mean(0) if (lab == j).any() else c[j] for j in range(k)])
+            if np.allclose(new, c):
+                break
+            c = new
+        inertia = ((X - c[lab]) ** 2).sum()
+        if best is None or inertia < best[0]:
+            best = (inertia, lab, c)
+    return best[1], best[2]
+
+
+def silhouette(X, lab, rng, n=1500):
+    i = rng.choice(len(X), min(n, len(X)), replace=False)
+    x, l = X[i], lab[i]
+    d = np.sqrt(((x[:, None] - x[None]) ** 2).sum(-1))
+    out = []
+    for j in range(len(x)):
+        same = l == l[j]
+        if same.sum() < 2:
+            continue
+        a = d[j, same].sum() / (same.sum() - 1)
+        b = min(d[j, l == o].mean() for o in set(l.tolist()) if o != l[j])
+        out.append((b - a) / max(a, b))
+    return float(np.mean(out))
+
+
+def dust_regimes(mfp, efp, e_valid, rng):
+    """Cluster every Mars cell and every scored Earth cell together. -> Mars labels, Earth labels (-1 = not
+    scored), and a summary per regime."""
+    fm, fe = regime_features(mfp), regime_features(efp)[e_valid.ravel()]
+    # ponytail: each planet is weighted by its cell count (7200 Mars vs ~2200 Earth), not by area.
+    # Resample to equal-area if regime shares are ever quoted as fractions of a planet's surface.
+    X = np.concatenate([fm, fe])
+    mu, sd = X.mean(0), X.std(0)
+    Z = np.clip((X - mu) / sd, -3, 3)
+    tried = {}
+    for k in range(4, 8):
+        lab, _ = kmeans(Z, k, rng)
+        tried[k] = (silhouette(Z, lab, rng), lab)
+    best = max(v[0] for v in tried.values())
+    k = min(q for q, v in tried.items() if v[0] >= best - 0.03)   # fewest clusters that are nearly as good
+    lab = tried[k][1]
+    order = np.argsort(-np.bincount(lab, minlength=k))            # regime 0 = most common
+    lab = np.argsort(order)[lab]
+    lm, le_valid = lab[: len(fm)], lab[len(fm):]
+    le = np.full(e_valid.size, -1)
+    le[e_valid.ravel()] = le_valid
+
+    shapes = np.concatenate([mfp["shape"].reshape(N, -1).T, efp["shape"].reshape(N, -1).T[e_valid.ravel()]])
+    aligned = np.stack([np.roll(sh, -int(sh.argmax())) for sh in shapes])    # peak moved to bin 0
+    info, used = [], set()
+    for j in range(k):
+        mem = lab == j
+        amp = shapes[mem].std(1).mean()
+        f = X[mem].mean(0)
+        name = ("Soft season" if amp < 0.35 else "Clear season" if amp < 0.6 else "Sharp season") + ", " + \
+               ("stormy years" if f[5] > 0.09 else "steady years" if f[6] < 0.3 else "variable years")
+        ms, es = (lm == j).mean(), (le_valid == j).mean()
+        where = "mostly Mars" if ms > 3 * es else "mostly Earth" if es > 3 * ms else "both planets"
+        if name in used:
+            name += f" ({where})"
+        used.add(name)
+        info.append(dict(id=j, name=name, where=where, rgb=REGIME_RGB[j], curve=r3(aligned[mem].mean(0)),
+                         seasonality=r3(amp), storminess=r3(f[5]), swing=r3(f[6]),
+                         mars_cells=int((lm == j).sum()), earth_cells=int((le_valid == j).sum()),
+                         mars_share=r3((lm == j).mean()), earth_share=r3((le_valid == j).mean())))
+    meta = dict(k=k, silhouette={str(q): r3(v[0]) for q, v in tried.items()},
+                mars_in_earth_rare=r3(sum(i["mars_share"] for i in info if i["earth_share"] < 0.02)),
+                earth_in_mars_rare=r3(sum(i["earth_share"] for i in info if i["mars_share"] < 0.02)))
+    return lm.reshape(mfp["storm"].shape), le.reshape(e_valid.shape), info, meta
+
+
+def label_png(lab, path, north_first):
+    if not north_first:
+        lab = lab[::-1]
+    img = np.zeros((*lab.shape, 4), np.uint8)
+    for j, rgb in enumerate(REGIME_RGB):
+        img[lab == j] = (*rgb, 165)
+    Image.fromarray(img, "RGBA").save(path)
+
+
+# ---------- storm-year detector ----------
+
+def storm_years(X, labels, valid=None):
+    """Flag abnormal years with no list of known storms. For each year, the largest share of the planet that
+    sits above twice its own median for that time of year; then a robust z-score across years."""
+    med = np.median(X, 0)
+    hot = X > 2 * med
+    frac = hot.reshape(*X.shape[:2], -1)[:, :, valid.ravel()].mean(-1) if valid is not None else hot.mean((2, 3))
+    peak = frac.max(1)
+    mad = np.median(np.abs(peak - np.median(peak))) or 1e-9
+    z = 0.6745 * (peak - np.median(peak)) / mad
+    # Gap rule: sort the years, find the widest gap, and flag the years above it only when that gap is wider
+    # than the whole spread of the years below it. No threshold to tune, and it returns nothing when the
+    # years form one continuous group.
+    srt = np.sort(peak)
+    g = int(np.diff(srt).argmax())
+    cut = srt[g + 1] if np.diff(srt)[g] > (srt[g] - srt[0]) else np.inf
+    return [dict(year=int(y), peak_share=r3(p), z=round(float(v), 1), flagged=bool(p >= cut), flagged_z=bool(v > 3.5), peak_bin=int(b))
+            for y, p, v, b in zip(labels, peak, z, frac.argmax(1))]
+
+
+def off_pattern(series):
+    """series (years, N) for one cell -> how many years each month strays beyond 0.5x..1.5x its median."""
+    med = np.median(series, 0)
+    return ((series > 1.5 * med) | (series < 0.5 * med)).sum(0).tolist()
+
+
 # ---------- output helpers ----------
 
 def r3(x):
@@ -292,6 +418,17 @@ def main():
     # self-checks: fingerprints are normalised, and a site scored against itself is a perfect match
     assert np.allclose(mfp["shape"].mean(0), 1) and np.allclose(efp["shape"].mean(0), 1)
 
+    reg_m, reg_e, reg_info, reg_meta = dust_regimes(mfp, efp, e_valid, rng)
+    label_png(reg_m, OUT / "regimes_mars.png", north_first=True)
+    label_png(reg_e, OUT / "regimes_earth.png", north_first=False)
+    KNOWN_STORMS = [25, 28, 34]   # global dust storms of 2001, 2007 and 2018; used only to grade the detector
+    sy_m, sy_e = storm_years(MX, myears), storm_years(EX, list(range(1999, 2023)), e_valid)
+    found = [y["year"] for y in sy_m if y["flagged"]]
+    print(f"regimes: k={reg_meta['k']} silhouette={reg_meta['silhouette']}")
+    for i in reg_info:
+        print(f"   {i['id']} {i['name']:42s} mars {i['mars_share']:.2f}  earth {i['earth_share']:.2f}")
+    print("storm years flagged on Mars:", found, "| on Earth:", [y["year"] for y in sy_e if y["flagged"]])
+
     sites_out, evidence = [], dict(sites={})
     for S in SITES:
         lon180 = S["lon"] - 360 if S["lon"] > 180 else S["lon"]
@@ -349,6 +486,8 @@ def main():
                 clim=r3(efp["clim"][:, i, j]), shape=r3(e_shape),
                 storm=r3(efp["storm"][i, j]), haze=r3(efp["haze"][i, j]), var=r3(efp["var"][i, j]),
                 robust=r3(robust[i, j]), beats_null=bool(s[i, j] > null99),
+                regime=int(reg_e[i, j]), same_regime=bool(reg_e[i, j] == reg_m[idx]),
+                off_years=off_pattern(EX[:, :, i, j]), n_years=int(EX.shape[0]),
                 wind=r3(wind[i, j]), wind_pct=r3(wind_pct[i, j]),
                 wind_tag="calm" if wind_pct[i, j] < 1 / 3 else "gusty" if wind_pct[i, j] > 2 / 3 else "moderate",
             ))
@@ -370,6 +509,8 @@ def main():
             **S, cell=dict(lat=float(mlat[idx[0]]), lon=float(mlon[idx[1]])),
             clim=r3(site["clim"]), shape=r3(site["shape"]), storm=r3(site["storm"]),
             haze=r3(site["haze"]), var=r3(site["var"]), reliability=r3(mrel[idx]),
+            regime=int(reg_m[idx]), off_years=off_pattern(MX[:, :, idx[0], idx[1]]),
+            earth_cells_same_regime=int((reg_e == reg_m[idx]).sum()),
             mars_years=myears, series=[r3(y) for y in MX[:, :, idx[0], idx[1]]],
         ))
         evidence["sites"][S["id"]] = dict(
@@ -381,6 +522,7 @@ def main():
             mars_self_test=dict(neighbour_percentile=r3(nb_pct)),
             pressure_sensitivity=dict(spearman=r3(spearman(s, s610)), top50_overlap=r3(top_overlap(s, s610))),
             famous_in_top10=int(sum(t["famous"] is not None for t in twins)),
+            same_regime_in_top10=int(sum(t["same_regime"] for t in twins)),
             rover=ground,
         )
         print(f"\n{S['name']:13s} top={hi:.3f} null99={null99:.3f} split_rho={evidence['sites'][S['id']]['split_years']['spearman']}"
@@ -388,6 +530,16 @@ def main():
         for t in twins[:5]:
             print(f"   {t['score']:.3f}  shift={t['shift']:2d}  robust={t['robust']:.2f}  {t['place']}  wind={t['wind_tag']}  test: {','.join(t['test_months'])}")
 
+    evidence["regimes"] = dict(meta=reg_meta, regimes=reg_info)
+    evidence["storm_years"] = dict(
+        mars=sy_m, earth=sy_e, known=KNOWN_STORMS, found=found,
+        hits=sorted(set(found) & set(KNOWN_STORMS)), missed=sorted(set(KNOWN_STORMS) - set(found)),
+        extra=sorted(set(found) - set(KNOWN_STORMS)), earth_flagged=[y["year"] for y in sy_e if y["flagged"]],
+        first_rule_found=[y["year"] for y in sy_m if y["flagged_z"]],
+        note="Our first rule (robust z-score above 3.5) flagged only one of the three known storm years, "
+             "because three large outliers in thirteen years inflate the spread it measures against. "
+             "We replaced it with the gap rule after seeing that, and report both.")
+    json.dump(evidence["regimes"], open(OUT / "regimes.json", "w"))
     evidence["meta"] = dict(
         generated=datetime.now(timezone.utc).isoformat(timespec="seconds"), bins=N, storm_multiple=STORM_X,
         weights=dict(zip(COMPONENTS, WEIGHTS.tolist())), earth_years="1999-2022", mars_years=f"MY{myears[0]}-MY{myears[-1]}",

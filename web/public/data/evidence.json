@@ -4,9 +4,9 @@
    "top_score": 0.888,
    "top10_mean": 0.858,
    "shuffle": {
-    "null_p99": 0.731,
-    "null_best": 0.825,
-    "cells_above_null": 459,
+    "null_p99": 0.732,
+    "null_best": 0.824,
+    "cells_above_null": 456,
     "cells_scored": 2230,
     "top10_above_null": 10
    },
@@ -22,6 +22,7 @@
     "top50_overlap": 0.78
    },
    "famous_in_top10": 0,
+   "same_regime_in_top10": 4,
    "rover": {
     "n": 26,
     "r": 0.942,
@@ -189,9 +190,9 @@
    "top_score": 0.883,
    "top10_mean": 0.851,
    "shuffle": {
-    "null_p99": 0.731,
-    "null_best": 0.826,
-    "cells_above_null": 410,
+    "null_p99": 0.732,
+    "null_best": 0.817,
+    "cells_above_null": 394,
     "cells_scored": 2230,
     "top10_above_null": 10
    },
@@ -207,6 +208,7 @@
     "top50_overlap": 0.76
    },
    "famous_in_top10": 0,
+   "same_regime_in_top10": 5,
    "rover": {
     "n": 92,
     "r": 0.786,
@@ -771,8 +773,8 @@
    "top10_mean": 0.855,
    "shuffle": {
     "null_p99": 0.737,
-    "null_best": 0.824,
-    "cells_above_null": 485,
+    "null_best": 0.816,
+    "cells_above_null": 488,
     "cells_scored": 2230,
     "top10_above_null": 10
    },
@@ -788,6 +790,7 @@
     "top50_overlap": 0.72
    },
    "famous_in_top10": 0,
+   "same_regime_in_top10": 2,
    "rover": {
     "n": 40,
     "r": 0.966,
@@ -1040,8 +1043,8 @@
    "top10_mean": 0.875,
    "shuffle": {
     "null_p99": 0.763,
-    "null_best": 0.848,
-    "cells_above_null": 382,
+    "null_best": 0.853,
+    "cells_above_null": 381,
     "cells_scored": 2230,
     "top10_above_null": 10
    },
@@ -1057,15 +1060,16 @@
     "top50_overlap": 0.64
    },
    "famous_in_top10": 0,
+   "same_regime_in_top10": 2,
    "rover": null
   },
   "curiosity": {
    "top_score": 0.888,
    "top10_mean": 0.865,
    "shuffle": {
-    "null_p99": 0.736,
-    "null_best": 0.824,
-    "cells_above_null": 521,
+    "null_p99": 0.734,
+    "null_best": 0.816,
+    "cells_above_null": 544,
     "cells_scored": 2230,
     "top10_above_null": 10
    },
@@ -1081,11 +1085,506 @@
     "top50_overlap": 0.8
    },
    "famous_in_top10": 0,
+   "same_regime_in_top10": 3,
    "rover": null
   }
  },
+ "regimes": {
+  "meta": {
+   "k": 5,
+   "silhouette": {
+    "4": 0.282,
+    "5": 0.306,
+    "6": 0.297,
+    "7": 0.316
+   },
+   "mars_in_earth_rare": 0.0,
+   "earth_in_mars_rare": 0.0
+  },
+  "regimes": [
+   {
+    "id": 0,
+    "name": "Clear season, variable years",
+    "where": "mostly Mars",
+    "rgb": [
+     230,
+     192,
+     122
+    ],
+    "curve": [
+     2.095,
+     1.752,
+     1.381,
+     1.246,
+     1.029,
+     0.604,
+     0.467,
+     0.408,
+     0.412,
+     0.449,
+     0.728,
+     1.429
+    ],
+    "seasonality": 0.568,
+    "storminess": 0.062,
+    "swing": 0.414,
+    "mars_cells": 3343,
+    "earth_cells": 64,
+    "mars_share": 0.464,
+    "earth_share": 0.029
+   },
+   {
+    "id": 1,
+    "name": "Clear season, steady years",
+    "where": "mostly Earth",
+    "rgb": [
+     217,
+     105,
+     74
+    ],
+    "curve": [
+     1.835,
+     1.535,
+     1.171,
+     0.923,
+     0.781,
+     0.722,
+     0.628,
+     0.555,
+     0.573,
+     0.698,
+     1.037,
+     1.541
+    ],
+    "seasonality": 0.452,
+    "storminess": 0.041,
+    "swing": 0.253,
+    "mars_cells": 1209,
+    "earth_cells": 1486,
+    "mars_share": 0.168,
+    "earth_share": 0.666
+   },
+   {
+    "id": 2,
+    "name": "Clear season, stormy years",
+    "where": "both planets",
+    "rgb": [
+     141,
+     184,
+     204
+    ],
+    "curve": [
+     2.148,
+     1.636,
+     1.294,
+     1.231,
+     0.89,
+     0.577,
+     0.508,
+     0.433,
+     0.398,
+     0.479,
+     0.934,
+     1.471
+    ],
+    "seasonality": 0.56,
+    "storminess": 0.113,
+    "swing": 0.501,
+    "mars_cells": 1097,
+    "earth_cells": 218,
+    "mars_share": 0.152,
+    "earth_share": 0.098
+   },
+   {
+    "id": 3,
+    "name": "Sharp season, variable years",
+    "where": "both planets",
+    "rgb": [
+     159,
+     196,
+     141
+    ],
+    "curve": [
+     2.688,
+     2.214,
+     1.514,
+     0.952,
+     0.519,
+     0.347,
+     0.294,
+     0.293,
+     0.309,
+     0.354,
+     0.652,
+     1.864
+    ],
+    "seasonality": 0.847,
+    "storminess": 0.066,
+    "swing": 0.358,
+    "mars_cells": 880,
+    "earth_cells": 156,
+    "mars_share": 0.122,
+    "earth_share": 0.07
+   },
+   {
+    "id": 4,
+    "name": "Soft season, stormy years",
+    "where": "both planets",
+    "rgb": [
+     190,
+     160,
+     214
+    ],
+    "curve": [
+     1.536,
+     1.343,
+     1.049,
+     0.941,
+     0.934,
+     0.967,
+     0.973,
+     0.799,
+     0.666,
+     0.685,
+     0.869,
+     1.239
+    ],
+    "seasonality": 0.304,
+    "storminess": 0.104,
+    "swing": 0.405,
+    "mars_cells": 671,
+    "earth_cells": 306,
+    "mars_share": 0.093,
+    "earth_share": 0.137
+   }
+  ]
+ },
+ "storm_years": {
+  "mars": [
+   {
+    "year": 24,
+    "peak_share": 0.152,
+    "z": 0.1,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 7
+   },
+   {
+    "year": 25,
+    "peak_share": 0.817,
+    "z": 3.6,
+    "flagged": true,
+    "flagged_z": true,
+    "peak_bin": 7
+   },
+   {
+    "year": 26,
+    "peak_share": 0.22,
+    "z": 0.5,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 11
+   },
+   {
+    "year": 27,
+    "peak_share": 0.133,
+    "z": 0.0,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 28,
+    "peak_share": 0.731,
+    "z": 3.1,
+    "flagged": true,
+    "flagged_z": false,
+    "peak_bin": 9
+   },
+   {
+    "year": 29,
+    "peak_share": 0.024,
+    "z": -0.6,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 5
+   },
+   {
+    "year": 30,
+    "peak_share": 0.0,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 31,
+    "peak_share": 0.0,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 32,
+    "peak_share": 0.0,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 33,
+    "peak_share": 0.005,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 11
+   },
+   {
+    "year": 34,
+    "peak_share": 0.794,
+    "z": 3.5,
+    "flagged": true,
+    "flagged_z": false,
+    "peak_bin": 6
+   },
+   {
+    "year": 35,
+    "peak_share": 0.006,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 36,
+    "peak_share": 0.166,
+    "z": 0.2,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 10
+   }
+  ],
+  "earth": [
+   {
+    "year": 1999,
+    "peak_share": 0.026,
+    "z": -1.8,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 2000,
+    "peak_share": 0.063,
+    "z": -0.2,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 9
+   },
+   {
+    "year": 2001,
+    "peak_share": 0.083,
+    "z": 0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 7
+   },
+   {
+    "year": 2002,
+    "peak_share": 0.101,
+    "z": 1.5,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 7
+   },
+   {
+    "year": 2003,
+    "peak_share": 0.078,
+    "z": 0.5,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 9
+   },
+   {
+    "year": 2004,
+    "peak_share": 0.054,
+    "z": -0.6,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 2005,
+    "peak_share": 0.051,
+    "z": -0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 2006,
+    "peak_share": 0.099,
+    "z": 1.4,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 8
+   },
+   {
+    "year": 2007,
+    "peak_share": 0.058,
+    "z": -0.4,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2008,
+    "peak_share": 0.083,
+    "z": 0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 11
+   },
+   {
+    "year": 2009,
+    "peak_share": 0.12,
+    "z": 2.3,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2010,
+    "peak_share": 0.091,
+    "z": 1.0,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 11
+   },
+   {
+    "year": 2011,
+    "peak_share": 0.081,
+    "z": 0.6,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 6
+   },
+   {
+    "year": 2012,
+    "peak_share": 0.084,
+    "z": 0.7,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 2
+   },
+   {
+    "year": 2013,
+    "peak_share": 0.036,
+    "z": -1.4,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2014,
+    "peak_share": 0.077,
+    "z": 0.4,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 10
+   },
+   {
+    "year": 2015,
+    "peak_share": 0.06,
+    "z": -0.4,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 11
+   },
+   {
+    "year": 2016,
+    "peak_share": 0.054,
+    "z": -0.6,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 2017,
+    "peak_share": 0.039,
+    "z": -1.3,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 3
+   },
+   {
+    "year": 2018,
+    "peak_share": 0.111,
+    "z": 1.9,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2019,
+    "peak_share": 0.026,
+    "z": -1.8,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2020,
+    "peak_share": 0.054,
+    "z": -0.6,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 0
+   },
+   {
+    "year": 2021,
+    "peak_share": 0.061,
+    "z": -0.3,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 1
+   },
+   {
+    "year": 2022,
+    "peak_share": 0.073,
+    "z": 0.2,
+    "flagged": false,
+    "flagged_z": false,
+    "peak_bin": 4
+   }
+  ],
+  "known": [
+   25,
+   28,
+   34
+  ],
+  "found": [
+   25,
+   28,
+   34
+  ],
+  "hits": [
+   25,
+   28,
+   34
+  ],
+  "missed": [],
+  "extra": [],
+  "earth_flagged": [],
+  "first_rule_found": [
+   25
+  ],
+  "note": "Our first rule (robust z-score above 3.5) flagged only one of the three known storm years, because three large outliers in thirteen years inflate the spread it measures against. We replaced it with the gap rule after seeing that, and report both."
+ },
  "meta": {
-  "generated": "2026-11-14T22:40:53+00:00",
+  "generated": "2026-11-14T23:08:24+00:00",
   "bins": 12,
   "storm_multiple": 1.5,
   "weights": {

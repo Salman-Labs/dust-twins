@@ -2,12 +2,14 @@ export type Site = {
   id: string; name: string; place: string; lat: number; lon: number; years: number[] | string;
   cleaning: "calm" | "gusty" | "n/a"; note: string; cell: { lat: number; lon: number };
   clim: number[]; shape: number[]; storm: number; haze: number; var: number; reliability: number; series: number[][]; mars_years?: number[];
+  regime: number; off_years: number[]; earth_cells_same_regime: number;
 };
 export type Twin = {
   lat: number; lon: number; place: string; famous: string | null; score: number;
   components: { season: number; storminess: number; haze: number; variability: number };
   shift: number; mars_bin: number[]; month_match: number[]; test_months: string[];
   clim: number[]; shape: number[]; storm: number; haze: number; var: number; robust: number; beats_null: boolean;
+  regime: number; same_regime: boolean; off_years: number[]; n_years: number;
   wind: number; wind_pct: number; wind_tag: "calm" | "moderate" | "gusty"; near: string; region: string; country: string;
 };
 export type TwinFile = { site: string; twins: Twin[]; scale: { lo: number; hi: number } };
@@ -17,10 +19,16 @@ export type SiteEvidence = {
   split_years: { spearman: number; top50_overlap: number };
   mars_self_test: { neighbour_percentile: number };
   pressure_sensitivity: { spearman: number; top50_overlap: number };
-  famous_in_top10: number;
+  famous_in_top10: number; same_regime_in_top10: number;
   rover: null | { n: number; r: number; pairs: { my: number; bin: number; rover: number; orbit: number }[] };
 };
-export type Evidence = { sites: Record<string, SiteEvidence>; meta: Record<string, unknown> };
+export type Regime = { id: number; name: string; where: string; rgb: [number, number, number]; curve: number[]; mars_share: number; earth_share: number; mars_cells: number; earth_cells: number };
+export type StormYear = { year: number; peak_share: number; z: number; flagged: boolean; flagged_z: boolean };
+export type Evidence = {
+  sites: Record<string, SiteEvidence>; meta: Record<string, unknown>;
+  regimes: { meta: { k: number; silhouette: Record<string, number> }; regimes: Regime[] };
+  storm_years: { mars: StormYear[]; earth: StormYear[]; known: number[]; found: number[]; hits: number[]; missed: number[]; extra: number[]; earth_flagged: number[]; first_rule_found: number[]; note: string };
+};
 
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** Mars season for a 30-degree solar-longitude bin (northern hemisphere naming). */
