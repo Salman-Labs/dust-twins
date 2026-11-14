@@ -22,7 +22,7 @@ const total = start[6] + len[6];
 if (total > 29.9) throw new Error(`too long: ${total.toFixed(2)} s`);
 
 const browser = await chromium.launch({ channel: "chrome", headless: true, args: ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist", "--mute-audio"] });
-const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1.5, recordVideo: { dir: "out-demo", size: { width: 1920, height: 1080 } } });
+const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2, recordVideo: { dir: "out-demo", size: { width: W, height: H } } });
 await ctx.addInitScript(() => { try { localStorage.setItem("dust-twins-seen", "1"); } catch {} });
 const page = await ctx.newPage();
 const t0 = Date.now();
@@ -39,9 +39,11 @@ await page.addStyleTag({ content: `
   #v-card p { margin-top: 26px; font-size: 30px; color: #a8a196; }
   #v-card .url { margin-top: 40px; font-family: var(--font-mono), monospace; font-size: 40px; color: #e6c07a; }
   #v-img { inset: 0; background: #0b0a09 url(/tex/insight_selfie.jpg) center/cover no-repeat; transform: scale(1.04); transition: opacity 450ms ease-out, transform 5s ease-out; }
-  #v-cap { left: 50%; bottom: 34px; transform: translateX(-50%); background: #0b0a09; box-shadow: 0 0 0 1px rgba(239,233,223,0.14); padding: 16px 30px; border-radius: 14px; font-size: 32px; font-weight: 500; white-space: nowrap; }
-  #v-cap small { display: block; font-size: 19px; font-weight: 400; color: #a8a196; margin-top: 2px; text-align: center; }
+  #v-cap { left: 0; right: 0; bottom: 0; height: 104px; background: #0b0a09; border-top: 1px solid rgba(239,233,223,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 30px; font-weight: 500; white-space: nowrap; }
+  #v-cap small { display: block; font-size: 18px; font-weight: 400; color: #a8a196; margin-top: 2px; text-align: center; }
   nextjs-portal { display: none !important; }
+  aside { transition: opacity 500ms ease-out; }
+  body.v-solo aside { opacity: 0; }
 ` });
 await page.evaluate(() => {
   for (const id of ["v-img", "v-card", "v-cap"]) { const d = document.createElement("div"); d.id = id; document.body.appendChild(d); }
@@ -53,8 +55,9 @@ await page.evaluate(() => {
   w.img = (on) => { const c = document.getElementById("v-img"); c.style.opacity = on ? 1 : 0; c.style.transform = on ? "scale(1.14)" : "scale(1.04)"; };
   /** Point the camera at a rectangle given in untransformed page pixels. */
   w.look = (x, y, wd, hd) => {
-    const s = wd ? Math.min(innerWidth / wd, innerHeight / hd) : 1;
-    const tx = wd ? (innerWidth - wd * s) / 2 - x * s : 0, ty = wd ? (innerHeight - hd * s) / 2 - y * s : 0;
+    const vh = innerHeight - 104;   // the caption band owns the bottom of the frame
+    const s = wd ? Math.min(innerWidth / wd, vh / hd) : 1;
+    const tx = wd ? (innerWidth - wd * s) / 2 - x * s : 0, ty = wd ? (vh - hd * s) / 2 - y * s : 0;
     w.cam = { s, x: tx, y: ty };
     document.querySelector("main").style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
   };
@@ -84,7 +87,7 @@ await at(start[1] - 0.25);
 await ev(() => { window.img(true); window.card(null); window.cap("Dust ended NASA's InSight mission", "Final selfie, April 2022 · NASA/JPL-Caltech"); });
 await at(start[2] - 0.3);
 // 3. the match: both globes, then turn to the Pakistan twin
-await ev(() => { window.img(false); window.cap("Mars landing sites, matched to Earth by how dust behaves"); const c = document.querySelector("canvas").getBoundingClientRect(); window.look(c.x, c.y + c.height * 0.5 - c.width * 9 / 32 - 14, c.width, c.width * 9 / 16); });
+await ev(() => { document.body.classList.add("v-solo"); window.img(false); window.cap("Mars landing sites, matched to Earth by how dust behaves"); const c = document.querySelector("canvas").getBoundingClientRect(), w = 520, h = w * 9 / 16; window.look(c.x + (c.width - w) / 2, c.y + c.height * 0.455 - h / 2, w, h); });
 await at(start[2] + 2.6);
 await ev(() => { window.byText("ol li button", "4")?.click(); });
 await at(start[3] - 1.2);
@@ -92,6 +95,7 @@ await ev(() => { window.byText("button", "Challenge ")?.click(); });   // a live
 await at(start[3] - 0.3);
 // 4. the test calendar (and start the model's challenge so its answer lands in the next shot)
 await ev(() => {
+  document.body.classList.remove("v-solo");
   const s = document.querySelector('[data-guide="calendar"]');
   s.scrollIntoView({ block: "start" }); s.parentElement.scrollTop -= 96;
   window.lookAt(s, 560, -20); window.cap("A test calendar for every twin");
@@ -127,7 +131,7 @@ const delays = clips.map((_, i) => `[${i + 1}:a]adelay=${Math.round((start[i] + 
 const mix = clips.map((_, i) => `[a${i}]`).join("") + `amix=inputs=${clips.length}:normalize=0[a]`;
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 execFileSync("ffmpeg", ["-loglevel", "error", "-y", "-ss", offset.toFixed(3), "-i", video, ...ins,
-  "-filter_complex", `[0:v]fps=30,fade=t=out:st=${(total - 0.4).toFixed(2)}:d=0.4[v];${delays};${mix}`,
+  "-filter_complex", `[0:v]fps=30,scale=1920:1080:flags=lanczos,fade=t=out:st=${(total - 0.4).toFixed(2)}:d=0.4[v];${delays};${mix}`,
   "-map", "[v]", "-map", "[a]", "-t", total.toFixed(2), "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
   "-metadata", "title=Dust Twins: 30-second demo (Team WYRD)",
   "-metadata", "comment=Screen recording of the Dust Twins app. Narration is SI-generated speech (ElevenLabs text-to-speech).",

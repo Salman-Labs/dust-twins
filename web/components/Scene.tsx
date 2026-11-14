@@ -158,7 +158,8 @@ function Rig({ children }: { children: (l: { mars: [number, number, number]; ear
   const { viewport, size } = useThree();
   const wide = size.width >= 520;
   // the canvas is its own column: two globes side by side, lifted a little to clear the month strip
-  const r = Math.min(viewport.width * (wide ? 0.215 : 0.225), viewport.height * (wide ? 0.27 : 0.34));
+  // narrower columns (a 1280px laptop leaves about 600px) need smaller globes, or the Earth slides under the sidebar
+  const r = Math.min(viewport.width * (!wide ? 0.225 : size.width < 760 ? 0.19 : 0.215), viewport.height * (wide ? 0.27 : 0.34));
   const d = r * 1.16, y = wide ? viewport.height * 0.045 : 0;
   return <>{children({ mars: [-d, y, 0], earth: [d, y, 0], r })}</>;
 }
