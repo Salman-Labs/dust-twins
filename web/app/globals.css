@@ -1,47 +1,51 @@
 @import "tailwindcss";
 
+/* One warm neutral ramp. Mars and Earth are data colours; --dust is the only accent. */
 :root {
-  --bg: #06070b;
-  --ink: #f3ede4;
-  --dim: #9a958c;
-  --line: rgba(243, 237, 228, 0.12);
-  --panel: rgba(12, 13, 19, 0.72);
-  --mars: #ff8a5c;
-  --earth: #6ec5d8;
-  --dust: #ffb040;
-  --ok: #8fd694;
-  --warn: #f2c078;
+  --bg: #0b0a09;
+  --surface: #121110;
+  --ink: #efe9df;
+  --dim: #a8a196;
+  --mute: #7a746a;
+  --line: rgba(239, 233, 223, 0.09);
+  --mars: #d9694a;
+  --earth: #8db8cc;
+  --dust: #e6c07a;
+  --ok: #9fc48d;
+  --warn: #e6c07a;
 }
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-dim: var(--dim);
+  --color-mute: var(--mute);
   --color-line: var(--line);
-  --color-panel: var(--panel);
   --color-mars: var(--mars);
   --color-earth: var(--earth);
   --color-dust: var(--dust);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
-html, body { background: var(--bg); color: var(--ink); font-family: var(--font-geist-sans), system-ui, sans-serif; }
+html, body { background: var(--bg); color: var(--ink); font-family: var(--font-sans), system-ui, sans-serif; }
 @media (min-width: 768px) { body { overflow: hidden; } }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--dust); outline-offset: 2px; border-radius: 4px; }
-.panel { background: rgba(9, 10, 15, 0.9); border: 1px solid var(--line); border-radius: 10px; }
-.label { font-size: 11.5px; font-weight: 500; color: var(--dim); }
-.font-serif { font-family: var(--font-serif), sans-serif; font-stretch: 118%; font-weight: 650; letter-spacing: -0.015em; }
-.num { font-family: var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; }
-.scroll::-webkit-scrollbar { width: 6px; } .scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
-.ring-rot { transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1); transform-origin: center; transform-box: view-box; }
-@media (prefers-reduced-motion: reduce) { .ring-rot { transition: none; } }
-@keyframes kenburns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.16) translate(-2%, -3%); } }
+button:disabled { cursor: default; opacity: 0.45; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
+
+.surface { background: var(--surface); }
+.row { transition: background-color 150ms ease-out, color 150ms ease-out; }
+.num { font-family: var(--font-mono), monospace; font-variant-numeric: tabular-nums; font-stretch: 87.5%; letter-spacing: 0; }
+.scroll::-webkit-scrollbar { width: 8px; }
+.scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+.ring-rot { transition: transform 700ms ease-out; transform-origin: center; transform-box: view-box; }
+@keyframes kenburns { from { transform: scale(1.02); } to { transform: scale(1.14) translate(-2%, -3%); } }
 .kenburns { animation: kenburns 9s ease-out both; }
-@keyframes storyfill { from { width: 0; } to { width: 100%; } }
-.story-fill { animation: storyfill linear both; }
-@media (prefers-reduced-motion: reduce) { .kenburns, .story-fill { animation: none; } }
+@keyframes storyfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.story-fill { width: 100%; transform-origin: left; animation: storyfill linear both; }
+@media (prefers-reduced-motion: reduce) { .ring-rot { transition: none; } .kenburns, .story-fill { animation: none; } }

@@ -71,8 +71,8 @@ function Pin({ m, r, color, register }: { m: Marker; r: number; color: string; r
   const quat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), pos.clone().normalize()), [pos]);
   useFrame(({ clock }) => {
     if (!ring.current) return;
-    const s = m.active ? 1 + 0.35 * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 3)) : 1;
-    ring.current.scale.setScalar(s);
+    void clock;
+    ring.current.scale.setScalar(m.active ? 1.25 : 1);
   });
   return (
     <group position={pos} quaternion={quat} ref={(o) => register(m.key, o)}>
@@ -118,7 +118,6 @@ function Globe(props: {
   });
   return (
     <group position={props.position}>
-      <Glow r={props.r} color={props.glow} />
       <PresentationControls global={false} snap speed={1.4} polar={[-0.5, 0.5]} azimuth={[-Infinity, Infinity]}>
         <group ref={tilt}>
           <group ref={spin}>
@@ -152,24 +151,16 @@ function Thread({ get, from, to }: { get: (k: string) => THREE.Object3D | undefi
     line.current.computeLineDistances?.();   // dashes need fresh distances after the points move
     line.current.material.dashOffset = -clock.elapsedTime * 0.6;
   });
-  return <QuadraticBezierLine ref={line} start={[0, 0, 0]} end={[0, 0, 0]} color="#ffb040" lineWidth={2} dashed dashScale={6} dashSize={0.6} gapSize={0.35} transparent opacity={0.95} />;
+  return <QuadraticBezierLine ref={line} start={[0, 0, 0]} end={[0, 0, 0]} color="#e6c07a" lineWidth={1.5} dashed dashScale={6} dashSize={0.6} gapSize={0.35} transparent opacity={0.9} />;
 }
 
 function Rig({ children }: { children: (l: { mars: [number, number, number]; earth: [number, number, number]; r: number }) => React.ReactNode }) {
   const { viewport, size } = useThree();
-  const k = viewport.width / size.width;   // world units per CSS pixel
-  if (size.width >= 768) {
-    // desktop: globes share the gap between the left (320px) and right (380px) panels
-    const left = size.width >= 1024 ? 320 : 300, right = 380;
-    const avail = Math.max(260, size.width - left - right) * k;
-    const cx = ((left - right) / 2) * k;
-    const r = Math.min(avail * 0.215, viewport.height * 0.27);
-    const d = Math.max(r * 1.18, avail * 0.26);
-    return <>{children({ mars: [cx - d, viewport.height * 0.03, 0], earth: [cx + d, viewport.height * 0.03, 0], r })}</>;
-  }
-  // phone: the canvas is its own block above the panels; globes side by side
-  const r = Math.min(viewport.width * 0.225, viewport.height * 0.36);
-  return <>{children({ mars: [-r * 1.12, -viewport.height * 0.06, 0], earth: [r * 1.12, -viewport.height * 0.06, 0], r })}</>;
+  const wide = size.width >= 520;
+  // the canvas is its own column: two globes side by side, lifted a little to clear the month strip
+  const r = Math.min(viewport.width * (wide ? 0.215 : 0.225), viewport.height * (wide ? 0.27 : 0.34));
+  const d = r * 1.16, y = wide ? viewport.height * 0.045 : 0;
+  return <>{children({ mars: [-d, y, 0], earth: [d, y, 0], r })}</>;
 }
 
 export default function Scene(props: {
@@ -183,15 +174,15 @@ export default function Scene(props: {
     <Canvas camera={{ fov: 35, position: [0, 0, 9] }} dpr={[1, 2]} gl={{ antialias: true }}>
       <ambientLight intensity={1.15} />
       <directionalLight position={[2, 3, 6]} intensity={1.6} />
-      <Stars radius={60} depth={40} count={2600} factor={3} fade speed={props.reducedMotion ? 0 : 0.4} />
+      <Stars radius={60} depth={40} count={1400} factor={2.4} fade speed={0} />
       <Suspense fallback={null}>
         <Rig>
           {(l) => (
             <>
-              <Globe tex="/tex/mars.jpg" position={l.mars} r={l.r} face={props.marsFace} glow="#ff7a45" pin="#ffd9c7"
+              <Globe tex="/tex/mars.jpg" position={l.mars} r={l.r} face={props.marsFace} glow="#000" pin="#efe9df"
                 markers={props.marsMarkers} haze="/data/haze_mars.png" hazeFrame={props.marsFrame} hazeOpacity={props.showHaze ? 0.85 : 0}
                 register={register} still={props.reducedMotion} />
-              <Globe tex="/tex/earth.jpg" position={l.earth} r={l.r} face={props.earthFace} glow="#4aa3ff" pin="#ffb040"
+              <Globe tex="/tex/earth.jpg" position={l.earth} r={l.r} face={props.earthFace} glow="#000" pin="#e6c07a"
                 markers={props.earthMarkers} overlay={props.overlay} haze="/data/haze_earth.png" hazeFrame={props.earthFrame}
                 hazeOpacity={props.showHaze ? 0.9 : 0} register={register} still={props.reducedMotion} />
             </>

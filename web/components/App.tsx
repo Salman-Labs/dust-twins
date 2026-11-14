@@ -1,5 +1,7 @@
 "use client";
 // Dust Twins main screen. Written with SI assistance (Claude).
+// Layout: two fixed sidebars (Mars left, Earth right) around the scene. The chrome stays quiet;
+// the globes and the Dust Ring carry the colour.
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import DustRing from "./DustRing";
@@ -10,38 +12,47 @@ import { type Evidence, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
 const LIMITS = [
-  ["Thin air", "Mars surface pressure is under 1% of Earth's. Wind lifts and drops dust differently."],
-  ["Low gravity", "38% of Earth's. Dust settles more slowly and stays aloft longer."],
-  ["Static charge", "Dry Martian dust clings electrostatically. Earth humidity bleeds charge away."],
-  ["Dust itself", "Martian dust is finer (about 1.5 µm) and iron-rich. Earth dust is coarser and mixed with pollution."],
-  ["Water", "No rain or dew on Mars. On Earth both clean panels and cement dust onto them."],
-  ["How it is measured", "Mars: infrared, from orbit. Earth: visible light, from a reanalysis model. We compare patterns and ranks, never raw values."],
+  ["Thin air", "Mars surface pressure is under 1% of Earth's. Wind lifts and drops dust differently"],
+  ["Low gravity", "38% of Earth's. Dust settles more slowly and stays aloft longer"],
+  ["Static charge", "Dry Martian dust clings electrostatically. Earth humidity bleeds charge away"],
+  ["Dust itself", "Martian dust is finer (about 1.5 µm) and iron-rich. Earth dust is coarser and mixed with pollution"],
+  ["Water", "No rain or dew on Mars. On Earth both clean panels and cement dust onto them"],
+  ["How it is measured", "Mars: infrared, from orbit. Earth: visible light, from a reanalysis model. We compare patterns and ranks, never raw values"],
 ];
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 
-function Bar({ v, color = "var(--dust)" }: { v: number; color?: string }) {
-  return <div className="h-1.5 w-full rounded-full bg-white/10"><div className="h-full rounded-full" style={{ width: pct(Math.max(0, Math.min(1, v))), background: color }} /></div>;
-}
+const PlayIcon = () => <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden><path d="M3 1 L13 7 L3 13Z" fill="currentColor" /></svg>;
+const PauseIcon = () => <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden><rect x="2" y="1" width="3.5" height="12" fill="currentColor" /><rect x="8.5" y="1" width="3.5" height="12" fill="currentColor" /></svg>;
 
-/** One line of the Test Card: a tick when it holds, a dash when it does not. */
-function Fact({ ok, children }: { ok: boolean; children: React.ReactNode }) {
+function Section({ title, aside, children }: { title: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="flex items-start gap-2 text-[12.5px] leading-snug">
-      <svg width="14" height="14" viewBox="0 0 14 14" className="mt-[2px] shrink-0" aria-hidden>
-        {ok ? <path d="M2.5 7.5 L5.5 10.5 L11.5 3.5" fill="none" stroke="var(--ok)" strokeWidth="1.8" /> : <path d="M3 7 H11" stroke="var(--dim)" strokeWidth="1.8" />}
-      </svg>
-      <span className={ok ? "" : "text-dim"}>{children}</span>
-    </li>
+    <section className="border-t border-line px-5 py-5">
+      <div className="mb-3 flex items-baseline justify-between gap-3"><h3 className="text-[13px] font-medium text-dim">{title}</h3>{aside}</div>
+      {children}
+    </section>
   );
 }
 
-function Meter({ label, value, v, hint }: { label: string; value: string; v: number; hint: string }) {
+/** A value with a thin track under it. */
+function Meter({ label, value, v, color = "var(--ink)" }: { label: string; value: string; v: number; color?: string }) {
   return (
-    <div title={hint}>
-      <div className="flex items-baseline justify-between"><dt className="text-[12px] text-dim">{label}</dt><dd className="num text-[13px]">{value}</dd></div>
-      <Bar v={v} color="var(--mars)" />
+    <div>
+      <div className="flex items-baseline justify-between gap-3"><dt className="text-[13px]">{label}</dt><dd className="num text-[13px]">{value}</dd></div>
+      <div className="mt-1.5 h-[2px] w-full bg-white/10"><div className="h-full" style={{ width: pct(Math.max(0, Math.min(1, v))), background: color }} /></div>
     </div>
+  );
+}
+
+/** One line of the test card: a tick when it holds, a dash when it does not. */
+function Fact({ ok, children }: { ok: boolean; children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-2 text-[13px] leading-snug">
+      <svg width="16" height="16" viewBox="0 0 16 16" className="mt-[1px] shrink-0" aria-hidden>
+        {ok ? <path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="var(--ok)" strokeWidth="1.5" /> : <path d="M4 8 H12" stroke="var(--mute)" strokeWidth="1.5" />}
+      </svg>
+      <span className={ok ? "" : "text-dim"}>{children}</span>
+    </li>
   );
 }
 
@@ -55,76 +66,56 @@ function monthRange(names: string[]) {
   return start === end ? MONTHS[start] : `${MONTHS[start]}–${MONTHS[end]}`;
 }
 
-/** Ranked twins. The bar behind each row is its score between the shuffled baseline and the best match. */
+function SiteList({ sites, siteId, setSiteId }: { sites: Site[]; siteId: string; setSiteId: (id: string) => void }) {
+  return (
+    <ul>
+      {sites.map((s) => {
+        const on = s.id === siteId;
+        return (
+          <li key={s.id}>
+            <button onClick={() => setSiteId(s.id)} aria-pressed={on}
+              className={`row flex h-9 w-full items-center justify-between gap-3 rounded-lg px-3 text-left text-[14px] ${on ? "bg-white/[0.07] text-ink" : "text-dim hover:text-ink"}`}>
+              <span className="flex items-center gap-2.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: on ? "var(--mars)" : "transparent", boxShadow: on ? "none" : "inset 0 0 0 1px var(--mute)" }} />{s.name}</span>
+              <span className="truncate text-[12px] text-mute">{s.place}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Ranked twins as a quiet table. The hairline under each row is its score above the shuffled baseline. */
 function TwinList({ file, ti, setTi }: { file: TwinFile; ti: number | null; setTi: (i: number) => void }) {
   const [all, setAll] = useState(false);
   const shown = all ? file.twins : file.twins.slice(0, 5);
   const { lo, hi } = file.scale;
   return (
     <>
-      <ol className="mt-3 grid gap-1">
+      <ol>
         {shown.map((t, i) => {
-          const on = i === ti, fill = Math.max(0.06, (t.score - lo) / (hi - lo || 1));
+          const on = i === ti, fill = Math.max(0.04, (t.score - lo) / (hi - lo || 1));
           return (
             <li key={i}>
               <button onClick={() => setTi(i)} aria-pressed={on}
-                className={`relative grid w-full grid-cols-[1.4rem_1fr_auto] items-center gap-x-2 overflow-hidden rounded-lg border px-2.5 py-2 text-left transition-colors ${on ? "border-dust/60" : "border-transparent hover:border-line"}`}>
-                <span aria-hidden className="absolute inset-y-0 left-0 rounded-lg" style={{ width: `${fill * 100}%`, background: on ? "rgba(255,176,64,0.16)" : "rgba(255,255,255,0.045)" }} />
-                <span className={`num relative text-[12px] ${on ? "text-dust" : "text-dim"}`}>{String(i + 1).padStart(2, "0")}</span>
-                <span className="relative min-w-0">
-                  <span className="block truncate text-[14px] font-medium leading-tight">{t.near}</span>
-                  <span className="block truncate text-[11.5px] leading-tight text-dim">{t.country} · test {monthRange(t.test_months)}</span>
+                className={`row relative grid w-full grid-cols-[1.75rem_1fr_auto] items-center gap-x-2 rounded-lg px-3 py-2 text-left ${on ? "bg-white/[0.07]" : "hover:bg-white/[0.035]"}`}>
+                <span className="num text-[12px] text-mute">{i + 1}</span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[14px] font-medium leading-5">{t.near}</span>
+                  <span className="block truncate text-[12px] leading-4 text-dim">{t.country} · {monthRange(t.test_months)}</span>
                 </span>
-                <span className="num relative text-[13px]">{t.score.toFixed(2)}</span>
+                <span className="num text-[13px]">{t.score.toFixed(2)}</span>
+                <span aria-hidden className="absolute bottom-0 left-3 h-[2px]" style={{ width: `calc((100% - 1.5rem) * ${fill})`, background: on ? "var(--dust)" : "rgba(255,255,255,0.14)" }} />
               </button>
             </li>
           );
         })}
       </ol>
-      <div className="mt-2 flex items-center justify-between text-[11.5px] text-dim">
-        <span>Bar = match above the shuffled baseline</span>
-        <button onClick={() => setAll((a) => !a)} className="text-ink underline decoration-line underline-offset-4">{all ? "Top 5 only" : `All ${file.twins.length}`}</button>
+      <div className="mt-3 flex items-center justify-between px-3 text-[12px] text-mute">
+        <span>Line length: match above the shuffled baseline</span>
+        <button onClick={() => setAll((a) => !a)} className="text-dim underline decoration-line underline-offset-4 hover:text-ink">{all ? "Top 5" : `All ${file.twins.length}`}</button>
       </div>
     </>
-  );
-}
-
-/** The year as two facing rows of bars: Earth dust above, the Mars dust it lines up with below. Click a month. */
-function YearBar(props: { month: number; setMonth: (m: number) => void; playing: boolean; setPlaying: (p: boolean) => void; site: Site | null; twin: Twin | null }) {
-  const { month, setMonth, playing, setPlaying, site, twin } = props;
-  const earth = twin?.shape ?? null;
-  const mars = site ? MONTHS.map((_, j) => site.shape[twin ? twin.mars_bin[j] : j]) : null;
-  const top = Math.max(1.6, ...(earth ?? []), ...(mars ?? []));
-  const bin = twin ? twin.mars_bin[month] : month;
-  return (
-    <div className="panel mx-auto flex max-w-[560px] items-stretch gap-3 px-3 py-2.5 max-md:hidden">
-      <button onClick={() => setPlaying(!playing)} aria-pressed={playing} aria-label={playing ? "Pause the year" : "Play the year"}
-        className="grid w-11 shrink-0 place-items-center rounded-lg border border-line hover:border-dust">
-        {playing
-          ? <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden><rect x="2" y="1" width="3.5" height="12" fill="currentColor" /><rect x="8.5" y="1" width="3.5" height="12" fill="currentColor" /></svg>
-          : <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden><path d="M3 1 L13 7 L3 13Z" fill="currentColor" /></svg>}
-      </button>
-      <div className="flex-1">
-        <div className="grid grid-cols-12 gap-[3px]" role="listbox" aria-label="Month of the year">
-          {MONTHS.map((m, j) => {
-            const on = j === month;
-            return (
-              <button key={m} role="option" aria-selected={on} aria-label={m} onClick={() => setMonth(j)}
-                className={`group flex flex-col items-stretch rounded-[5px] px-[2px] pb-[2px] pt-[3px] ${on ? "bg-white/10" : "hover:bg-white/5"}`}>
-                <span className="flex h-[18px] items-end"><span className="w-full rounded-[2px]" style={{ height: `${earth ? (earth[j] / top) * 100 : 8}%`, background: "var(--earth)", opacity: on ? 1 : 0.55 }} /></span>
-                <span className={`num py-[2px] text-center text-[9.5px] leading-none ${on ? "text-ink" : "text-dim"}`}>{m[0]}</span>
-                <span className="flex h-[18px] items-start"><span className="w-full rounded-[2px]" style={{ height: `${mars ? (mars[j] / top) * 100 : 8}%`, background: "var(--mars)", opacity: on ? 1 : 0.55 }} /></span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex w-[124px] shrink-0 flex-col justify-center text-[11.5px] leading-tight">
-        <span><span className="text-earth">Earth</span> <span className="num">{MONTHS[month]}</span></span>
-        <span className="mt-1"><span className="text-mars">Mars</span> <span className="num">{lsRange(bin)}</span></span>
-        <span className="mt-1 text-dim">{marsSeason(bin)}</span>
-      </div>
-    </div>
   );
 }
 
@@ -138,28 +129,57 @@ function Calendar({ twin, site, month, setMonth }: { twin: Twin; site: Site; mon
           const bin = twin.mars_bin[j], q = twin.month_match[j], on = test.has(m);
           return (
             <button key={m} role="option" aria-selected={month === j} onClick={() => setMonth(j)} onMouseEnter={() => setMonth(j)}
-              title={`${m}: rehearses Mars ${lsRange(bin)} (${marsSeason(bin)}), match ${pct(q)}`}
-              className={`flex flex-col items-center gap-1 rounded-md pb-1 pt-1.5 ${month === j ? "bg-white/10" : ""}`}>
-              <span className="num text-[10px] text-dim">{m[0]}</span>
-              <span className="block h-9 w-full rounded-sm" style={{ background: on ? "var(--dust)" : "var(--earth)", opacity: 0.18 + 0.82 * q * (on ? 1 : 0.55) }} />
-              <span className="num text-[9px]" style={{ color: on ? "var(--dust)" : "var(--dim)" }}>{bin * 30}°</span>
+              title={`${m}: lines up with Mars ${lsRange(bin)} (${marsSeason(bin)}), match ${pct(q)}`}
+              className="row flex flex-col items-stretch gap-1.5 rounded-md pb-1">
+              <span className="block h-10 w-full rounded-[4px]" style={{ background: on ? "var(--dust)" : "var(--ink)", opacity: on ? 0.3 + 0.7 * q : 0.06 + 0.16 * q, outline: month === j ? "1px solid var(--ink)" : "none", outlineOffset: 2 }} />
+              <span className={`num text-center text-[11px] ${month === j ? "text-ink" : "text-mute"}`}>{m[0]}</span>
             </button>
           );
         })}
       </div>
-      <p className="mt-2 text-[12px] leading-snug text-dim">
-        <span className="text-ink">{MONTHS[month]}</span> here lines up with Mars <span className="text-mars">{lsRange(twin.mars_bin[month])}</span> ({marsSeason(twin.mars_bin[month])}) at {site.place}. Pattern match that month: <span className="num text-ink">{pct(twin.month_match[month])}</span>.
-        <span className="ml-1" style={{ color: "var(--dust)" }}>■</span> = lines up with the site&apos;s four dustiest stretches of the year.
+      <p className="mt-3 text-[13px] leading-5 text-dim">
+        <span className="text-ink">{MONTHS[month]}</span> lines up with Mars <span className="num text-ink">{lsRange(twin.mars_bin[month])}</span>, {marsSeason(twin.mars_bin[month]).toLowerCase()} at {site.place}. Pattern match that month <span className="num text-ink">{pct(twin.month_match[month])}</span>
       </p>
+    </div>
+  );
+}
+
+/** The year as two facing rows of bars: Earth dust above, the Mars dust it lines up with below. */
+function YearBar(props: { month: number; setMonth: (m: number) => void; playing: boolean; setPlaying: (p: boolean) => void; site: Site | null; twin: Twin | null }) {
+  const { month, setMonth, playing, setPlaying, site, twin } = props;
+  const earth = twin?.shape ?? null;
+  const mars = site ? MONTHS.map((_, j) => site.shape[twin ? twin.mars_bin[j] : j]) : null;
+  const top = Math.max(1.6, ...(earth ?? []), ...(mars ?? []));
+  const bin = twin ? twin.mars_bin[month] : month;
+  return (
+    <div className="surface flex items-stretch gap-4 rounded-xl p-3">
+      <button onClick={() => setPlaying(!playing)} aria-pressed={playing} aria-label={playing ? "Pause the year" : "Play the year"}
+        className="row grid w-10 shrink-0 place-items-center rounded-lg bg-white/[0.07] hover:bg-white/[0.12]">{playing ? <PauseIcon /> : <PlayIcon />}</button>
+      <div className="grid flex-1 grid-cols-12 gap-1" role="listbox" aria-label="Month of the year">
+        {MONTHS.map((m, j) => {
+          const on = j === month;
+          return (
+            <button key={m} role="option" aria-selected={on} aria-label={m} onClick={() => setMonth(j)} className={`row flex flex-col items-stretch rounded-md px-0.5 py-1 ${on ? "bg-white/[0.08]" : "hover:bg-white/[0.04]"}`}>
+              <span className="flex h-4 items-end"><span className="w-full rounded-[2px]" style={{ height: `${earth ? (earth[j] / top) * 100 : 8}%`, background: "var(--earth)", opacity: on ? 1 : 0.5 }} /></span>
+              <span className={`num py-1 text-center text-[11px] leading-none ${on ? "text-ink" : "text-mute"}`}>{m[0]}</span>
+              <span className="flex h-4 items-start"><span className="w-full rounded-[2px]" style={{ height: `${mars ? (mars[j] / top) * 100 : 8}%`, background: "var(--mars)", opacity: on ? 1 : 0.5 }} /></span>
+            </button>
+          );
+        })}
+      </div>
+      <dl className="grid w-32 shrink-0 grid-cols-[auto_1fr] content-center gap-x-3 gap-y-1 text-[12px]">
+        <dt className="text-earth">Earth</dt><dd className="num">{MONTHS[month]}</dd>
+        <dt className="text-mars">Mars</dt><dd className="num">{lsRange(bin)}</dd>
+      </dl>
     </div>
   );
 }
 
 function Check({ ok, title, children }: { ok: boolean; title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-line p-3">
-      <div className="flex items-center gap-2"><span className={`num text-[11px] ${ok ? "text-ok" : "text-warn"}`}>{ok ? "HOLDS" : "WEAK"}</span><h4 className="text-[13px] font-medium">{title}</h4></div>
-      <p className="mt-1 text-[12px] leading-snug text-dim">{children}</p>
+    <div className="border-t border-line py-4">
+      <div className="flex items-baseline justify-between gap-3"><h4 className="text-[14px] font-medium">{title}</h4><span className={`text-[12px] ${ok ? "text-ok" : "text-warn"}`}>{ok ? "Holds" : "Weak"}</span></div>
+      <div className="mt-1 text-[13px] leading-5 text-dim">{children}</div>
     </div>
   );
 }
@@ -172,57 +192,60 @@ function RoverChart({ pairs }: { pairs: { my: number; bin: number; rover: number
   const mr = mean("rover"), mo = mean("orbit");
   const top = Math.max(...pairs.map((p) => Math.max(p.rover / mr, p.orbit / mo)));
   const x = (p: { my: number; bin: number }) => P + ((p.my + p.bin / 12 - t0) / (t1 - t0 || 1)) * (W - 2 * P);
-  const y = (v: number) => H - P - (v / top) * (H - 2 * P);
+  const y = (v: number) => H - 16 - (v / top) * (H - 36);
   const line = (k: "rover" | "orbit", m: number) => pairs.map((p, i) => `${i ? "L" : "M"}${x(p).toFixed(1)},${y(p[k] / m).toFixed(1)}`).join(" ");
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 w-full" role="img" aria-label="Rover-measured dust compared with the orbital record over time">
+    <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="Rover-measured dust compared with the orbital record over time">
       <path d={line("orbit", mo)} fill="none" stroke="var(--mars)" strokeWidth="1.5" />
-      <path d={line("rover", mr)} fill="none" stroke="var(--ink)" strokeWidth="1.5" strokeDasharray="3 3" />
-      <text x={P} y={12} className="num" fontSize="9" fill="var(--mars)">orbit (used here)</text>
-      <text x={P + 130} y={12} className="num" fontSize="9" fill="var(--ink)">rover on the ground</text>
-      <text x={P} y={H - 1} className="num" fontSize="8" fill="var(--dim)">MY{pairs[0].my}</text>
-      <text x={W - P} y={H - 1} textAnchor="end" className="num" fontSize="8" fill="var(--dim)">MY{pairs[pairs.length - 1].my}</text>
+      <path d={line("rover", mr)} fill="none" stroke="var(--ink)" strokeWidth="1.25" strokeDasharray="3 3" />
+      <text x={P} y={11} className="num" fontSize="11" fill="var(--mars)">Orbit</text>
+      <text x={P + 52} y={11} className="num" fontSize="11" fill="var(--ink)">Rover (dashed)</text>
+      <text x={P} y={H - 2} className="num" fontSize="11" fill="var(--mute)">MY{pairs[0].my}</text>
+      <text x={W - P} y={H - 2} textAnchor="end" className="num" fontSize="11" fill="var(--mute)">MY{pairs[pairs.length - 1].my}</text>
     </svg>
   );
 }
 
 function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site: Site; expectations: string | null; onClose: () => void }) {
   const e = ev.sites[site.id];
+  const N = ({ children }: { children: React.ReactNode }) => <span className="num text-ink">{children}</span>;
+  useEffect(() => {
+    const k = (x: KeyboardEvent) => x.key === "Escape" && onClose();
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [onClose]);
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
-      <div className="panel scroll max-h-[88vh] w-full max-w-2xl overflow-y-auto p-6" onClick={(x) => x.stopPropagation()} role="dialog" aria-label="Evidence">
+      <div className="surface scroll max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-2xl p-6 md:p-8" onClick={(x) => x.stopPropagation()} role="dialog" aria-label="Evidence">
         <div className="flex items-start justify-between gap-4">
-          <div><p className="label">Evidence · {site.name}</p><h2 className="font-serif text-3xl">Should you believe these twins?</h2></div>
-          <button onClick={onClose} className="label rounded-full border border-line px-3 py-1.5">Close</button>
+          <div><p className="text-[13px] text-dim">Evidence for {site.name}, {site.place}</p><h2 className="mt-1 text-[26px] font-semibold leading-tight">Should you believe these twins?</h2></div>
+          <button onClick={onClose} className="row rounded-lg bg-white/[0.07] px-3 py-1.5 text-[13px] hover:bg-white/[0.12]">Close</button>
         </div>
-        <p className="mt-2 text-[13px] text-dim">Every check is published whichever way it came out. Numbers are computed by the pipeline in the repository, not typed in.</p>
-        <div className="mt-4 grid gap-3">
-          <Check ok={e.shuffle.top10_above_null >= 8} title="Shuffle baseline">
-            We scrambled the months of every Earth cell and matched again. The best 1% of scrambled matches score <span className="num text-ink">{e.shuffle.null_p99}</span>; our top twin scores <span className="num text-ink">{e.top_score}</span>. <span className="num text-ink">{e.shuffle.top10_above_null}/10</span> of the top twins beat that line, and {e.shuffle.cells_above_null} of {e.shuffle.cells_scored} land cells do.
-          </Check>
-          <Check ok={e.split_years.spearman >= 0.6} title="Split years">
-            Twins found from odd years alone and from even years alone, on both planets. Rank agreement <span className="num text-ink">{e.split_years.spearman}</span> (1 = identical); <span className="num text-ink">{pct(e.split_years.top50_overlap)}</span> of the top 50 cells appear in both.
-          </Check>
-          <Check ok={e.mars_self_test.neighbour_percentile >= 0.9} title="Mars-to-Mars self test">
-            Matching the site against the rest of Mars, its own neighbouring cells rank above <span className="num text-ink">{(e.mars_self_test.neighbour_percentile * 100).toFixed(1)}%</span> of the planet. If they did not, the fingerprint would be broken.
-          </Check>
-          <Check ok={e.pressure_sensitivity.spearman >= 0.8} title="Pressure choice">
-            We use dust above the real ground. Switching to the 610 Pa-normalised product gives rank agreement <span className="num text-ink">{e.pressure_sensitivity.spearman}</span> and keeps <span className="num text-ink">{pct(e.pressure_sensitivity.top50_overlap)}</span> of the top 50.
-          </Check>
-        </div>
+        <p className="mb-5 mt-2 text-[14px] leading-6 text-dim">Every check is shown whichever way it came out. The numbers come from the pipeline in the repository</p>
+        <Check ok={e.shuffle.top10_above_null >= 8} title="Shuffle baseline">
+          We scrambled the months of every Earth cell and matched again. The best 1% of scrambled matches score <N>{e.shuffle.null_p99}</N>; our top twin scores <N>{e.top_score}</N>. <N>{e.shuffle.top10_above_null} of 10</N> top twins beat that line, as do {e.shuffle.cells_above_null} of {e.shuffle.cells_scored} land cells
+        </Check>
+        <Check ok={e.split_years.spearman >= 0.6} title="Split years">
+          Twins found from odd years alone and from even years alone, on both planets. Rank agreement <N>{e.split_years.spearman}</N> where 1 is identical; <N>{pct(e.split_years.top50_overlap)}</N> of the top 50 cells appear in both
+        </Check>
+        <Check ok={e.mars_self_test.neighbour_percentile >= 0.9} title="Mars-to-Mars self test">
+          Matched against the rest of Mars, the site&apos;s own neighbouring cells rank above <N>{(e.mars_self_test.neighbour_percentile * 100).toFixed(1)}%</N> of the planet. If they did not, the fingerprint would be broken
+        </Check>
+        <Check ok={e.pressure_sensitivity.spearman >= 0.8} title="Pressure choice">
+          We use dust above the real ground. Switching to the 610 Pa-normalised product gives rank agreement <N>{e.pressure_sensitivity.spearman}</N> and keeps <N>{pct(e.pressure_sensitivity.top50_overlap)}</N> of the top 50
+        </Check>
         {e.rover && (
-          <div className="mt-3 rounded-lg border border-line p-3">
-            <div className="flex items-center gap-2"><span className={`num text-[11px] ${e.rover.r >= 0.7 ? "text-ok" : "text-warn"}`}>{e.rover.r >= 0.7 ? "HOLDS" : "WEAK"}</span><h4 className="text-[13px] font-medium">Rover ground truth</h4></div>
-            <p className="mt-1 text-[12px] leading-snug text-dim">
-              {site.name} measured the dust in its own sky. Across <span className="num text-ink">{e.rover.n}</span> month-sized stretches, its readings and the orbital record at this cell correlate at <span className="num text-ink">{e.rover.r}</span>. Each line is scaled to its own average because the two instruments see different wavelengths.
-            </p>
+          <Check ok={e.rover.r >= 0.7} title="Rover ground truth">
+            {site.name} measured the dust in its own sky. Across <N>{e.rover.n}</N> month-sized stretches, its readings and the orbital record at this cell correlate at <N>{e.rover.r}</N>. Each line is scaled to its own average because the two instruments see different wavelengths
             <RoverChart pairs={e.rover.pairs} />
-          </div>
+          </Check>
         )}
-        <h3 className="mt-5 text-[13px] font-medium">What we expected before running it</h3>
-        <pre className="scroll mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-lg border border-line p-3 text-[12px] leading-snug text-dim">{expectations ?? "No expectations were registered before the run."}</pre>
-        <p className="mt-4 text-[12px] leading-snug text-dim">
-          These are atmospheric dust-behaviour analogues: places where the sky carries dust on a similar yearly pattern. They are candidate test windows to investigate, not predictions of dust settling or power loss. Whether dust stays on a panel also depends on wind cleaning, which differed sharply between Mars sites.
+        <div className="border-t border-line py-4">
+          <h4 className="text-[14px] font-medium">What we expected before running it</h4>
+          <pre className="scroll mt-2 max-h-48 overflow-auto whitespace-pre-wrap font-sans text-[13px] leading-5 text-dim">{expectations ?? "No expectations were registered before the run."}</pre>
+        </div>
+        <p className="border-t border-line pt-4 text-[13px] leading-5 text-dim">
+          These are atmospheric dust-behaviour analogues: places where the sky carries dust on a similar yearly pattern. They are candidate test windows to investigate, not predictions of dust settling or power loss. Whether dust stays on a panel also depends on wind cleaning, which differed sharply between Mars sites
         </p>
       </div>
     </div>
@@ -249,20 +272,19 @@ export default function App() {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const q = new URLSearchParams(window.location.search);
     if (q.has("story")) { setStory(0); setAuto(q.get("story") === "auto"); }
-    fetch("/data/mars_sites.json").then((r) => r.json()).then((d) => setSites(d.sites)).catch(() => setErr("Could not load the data files."));
+    fetch("/data/mars_sites.json").then((r) => r.json()).then((d) => setSites(d.sites)).catch(() => setErr("Could not load the data files"));
     fetch("/data/evidence.json").then((r) => r.json()).then(setEv).catch(() => {});
     fetch("/data/expectations.txt").then((r) => (r.ok ? r.text() : null)).then(setExpectations).catch(() => {});
   }, []);
   useEffect(() => {
     setFile(null); setTi(null);
-    fetch(`/data/twins_${siteId}.json`).then((r) => r.json()).then((d: TwinFile) => { setFile(d); setTi(0); }).catch(() => setErr("Could not load the twins."));
+    fetch(`/data/twins_${siteId}.json`).then((r) => r.json()).then((d: TwinFile) => { setFile(d); setTi(0); }).catch(() => setErr("Could not load the twins"));
   }, [siteId]);
   useEffect(() => {
     if (!playing) return;
     const t = setInterval(() => setMonth((m) => (m + 1) % 12), 850);
     return () => clearInterval(t);
   }, [playing]);
-
   // story mode drives the scene: InSight, its best twin, and the year playing from beat 4
   useEffect(() => {
     if (story == null) return;
@@ -277,137 +299,126 @@ export default function App() {
   const marsMarkers: Marker[] = useMemo(() => sites.map((s) => ({ key: `m-${s.id}`, lat: s.lat, lon: s.lon, active: s.id === siteId, onClick: () => setSiteId(s.id) })), [sites, siteId]);
   const earthMarkers: Marker[] = useMemo(() => (file?.twins ?? []).map((t, i) => ({ key: `e-${siteId}-${i}`, lat: t.lat, lon: t.lon, active: i === ti, onClick: () => setTi(i) })), [file, ti, siteId]);
 
-  if (err) return <main className="flex h-full items-center justify-center p-8 text-dim">{err}</main>;
+  if (err) return <main className="flex h-dvh items-center justify-center p-8 text-dim">{err}</main>;
+
+  const actions = (
+    <div className="flex gap-2">
+      <button onClick={() => { setAuto(false); setStory(0); }} className="row flex h-9 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-3.5 text-[13px] font-medium text-bg hover:bg-white"><PlayIcon />Play the story</button>
+      <button onClick={() => setShowEv(true)} disabled={!ev || !site} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">Evidence</button>
+    </div>
+  );
 
   return (
-    <main className="relative w-full md:h-dvh md:overflow-hidden">
-      <div className="relative h-[40dvh] md:absolute md:inset-0 md:h-auto">
-        <Scene marsMarkers={marsMarkers} earthMarkers={earthMarkers}
-          marsFace={site ? { lat: site.lat, lon: site.lon } : null} earthFace={twin ? { lat: twin.lat, lon: twin.lon } : null}
-          overlay={file ? `/data/score_${siteId}.png` : null}
-          marsFrame={twin ? twin.mars_bin[month] : month} earthFrame={month} showHaze={playing}
-          threadFrom={site ? `m-${site.id}` : null} threadTo={twin ? `e-${siteId}-${ti}` : null} reducedMotion={reduced} />
-      </div>
-
-      {/* header */}
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-4 p-4 md:p-5">
-        <div className="pointer-events-auto">
-          <h1 className="font-serif text-2xl leading-none md:text-4xl">Dust <span className="text-dust">Twins</span></h1>
-          <p className="mt-1 max-w-xs text-[12px] leading-snug text-dim max-md:hidden">Where on Earth does the sky carry dust like it does at a Mars landing site, and in which months?</p>
+    <main className="relative w-full md:grid md:h-dvh md:grid-cols-[300px_1fr_380px] md:overflow-hidden">
+      {/* Mars sidebar */}
+      <aside className="surface scroll z-10 md:overflow-y-auto md:border-r md:border-line max-md:hidden" aria-label="Mars landing site">
+        <div className="px-5 pb-5 pt-6">
+          <h1 className="text-[22px] font-semibold leading-none">Dust Twins</h1>
+          <p className="mt-2 text-[13px] leading-5 text-dim">Where on Earth the sky carries dust like a Mars landing site, and in which months</p>
         </div>
-        <div className="pointer-events-auto flex gap-2">
-          <button onClick={() => { setAuto(false); setStory(0); }} className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-dust px-3.5 py-2 text-[13px] font-medium text-black max-md:px-2.5 max-md:py-1.5 max-md:text-[12px]"><svg width="10" height="10" viewBox="0 0 14 14" aria-hidden><path d="M3 1 L13 7 L3 13Z" fill="currentColor" /></svg>Play the story</button>
-          <button onClick={() => setShowEv(true)} disabled={!ev || !site} className="rounded-lg border border-line px-3.5 py-2 text-[13px] font-medium hover:border-ink/40 max-md:px-2.5 max-md:py-1.5 max-md:text-[12px]">Evidence</button>
-        </div>
-      </header>
-
-      {/* Mars side */}
-      <section className="scroll absolute bottom-24 left-0 top-24 z-10 hidden w-[300px] overflow-y-auto p-4 md:block lg:w-[320px]" aria-label="Mars site">
-        <div className="panel p-4">
-          <p className="label text-mars">Mars · pick a landing site</p>
-          <ul className="mt-3 grid gap-1">
-            {sites.map((s) => {
-              const on = s.id === siteId;
-              return (
-                <li key={s.id}>
-                  <button onClick={() => setSiteId(s.id)} aria-pressed={on}
-                    className={`flex w-full items-baseline justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors ${on ? "border-mars/60 bg-mars/10" : "border-transparent hover:border-line"}`}>
-                    <span className="text-[14px] font-medium">{s.name}</span>
-                    <span className={`truncate text-[11.5px] ${on ? "text-mars" : "text-dim"}`}>{s.place}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {site && (
-            <>
-              <h2 className="mt-4 font-serif text-2xl leading-tight">{site.place}</h2>
-              <p className="num text-[11px] text-dim">{fmtLatLon(site.lat, site.lon)} · {site.name}</p>
-              <p className="mt-2 text-[12px] leading-snug text-dim">{site.note}</p>
-              <div className="mt-2 flex justify-center">
-                <DustRing mars={site.shape} marsYears={site.series} title={`Dust ring for ${site.place}`} size={230} />
-              </div>
-              <p className="text-[11px] leading-snug text-dim">One Mars year as a ring. Further out = dustier than this site&apos;s own average. Faint lines are 13 individual Mars years; spikes are global dust storms.</p>
-              <dl className="mt-3 grid gap-2.5 border-t border-line pt-3">
-                <Meter label="Months that run stormy" value={pct(site.storm)} v={site.storm / 0.25} hint="share of months well above their own normal" />
-                <Meter label="Haze, ranked on Mars" value={pct(site.haze)} v={site.haze} hint="100% = dustiest skies on the planet" />
-                <Meter label="Year-to-year swing" value={site.var.toFixed(2)} v={site.var / 0.8} hint="how far a month strays from its usual level" />
+        <Section title="Mars landing site"><div className="-mx-3"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div></Section>
+        {site && (
+          <>
+            <Section title="Its dust year">
+              <h2 className="text-[20px] font-semibold leading-6">{site.place}</h2>
+              <p className="num mt-1 text-[12px] text-mute">{fmtLatLon(site.lat, site.lon)}</p>
+              <p className="mt-2 text-[13px] leading-5 text-dim">{site.note}</p>
+              <div className="-mx-2 mt-2 flex justify-center"><DustRing mars={site.shape} marsYears={site.series} title={`Dust ring for ${site.place}`} size={264} /></div>
+              <p className="text-[12px] leading-4 text-mute">One Mars year as a ring. Further out is dustier than this site&apos;s own average. Faint lines are single years; spikes are global storms</p>
+            </Section>
+            <Section title="Fingerprint">
+              <dl className="grid gap-4">
+                <Meter label="Months that run stormy" value={pct(site.storm)} v={site.storm / 0.25} color="var(--mars)" />
+                <Meter label="Haze, ranked across Mars" value={pct(site.haze)} v={site.haze} color="var(--mars)" />
+                <Meter label="Year-to-year swing" value={site.var.toFixed(2)} v={site.var / 0.8} color="var(--mars)" />
               </dl>
-            </>
-          )}
+            </Section>
+          </>
+        )}
+      </aside>
+
+      {/* scene */}
+      <div className="relative h-[42dvh] md:h-auto">
+        <div className="absolute inset-0">
+          <Scene marsMarkers={marsMarkers} earthMarkers={earthMarkers}
+            marsFace={site ? { lat: site.lat, lon: site.lon } : null} earthFace={twin ? { lat: twin.lat, lon: twin.lon } : null}
+            overlay={file ? `/data/score_${siteId}.png` : null}
+            marsFrame={twin ? twin.mars_bin[month] : month} earthFrame={month} showHaze={playing}
+            threadFrom={site ? `m-${site.id}` : null} threadTo={twin ? `e-${siteId}-${ti}` : null} reducedMotion={reduced} />
         </div>
-      </section>
-
-      {/* Earth side */}
-      <section className="scroll z-10 w-full p-4 md:absolute md:bottom-24 md:right-0 md:top-20 md:max-w-[380px] md:overflow-y-auto" aria-label="Earth twins">
-        <div className="panel p-4">
-          <p className="label text-earth">Earth · dust twins{site ? ` of ${site.place}` : ""}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5 md:hidden">
-            {sites.map((s) => (
-              <button key={s.id} onClick={() => setSiteId(s.id)} aria-pressed={s.id === siteId}
-                className={`rounded-full border px-2.5 py-1 text-[12px] ${s.id === siteId ? "border-mars bg-mars/15" : "border-line text-dim"}`}>{s.name}</button>
-            ))}
-          </div>
-          {file ? <TwinList file={file} ti={ti} setTi={setTi} /> : <p className="py-6 text-center text-[12px] text-dim">Matching…</p>}
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4 md:hidden">
+          <h1 className="text-[18px] font-semibold">Dust Twins</h1>
+          <div className="pointer-events-auto">{actions}</div>
         </div>
-
-        {twin && site && (
-          <div className="panel mt-3 p-4">
-            <p className="label">Test card · {site.name}</p>
-            <h2 className="font-serif text-2xl leading-tight">{twin.place}</h2>
-            <p className="num text-[11px] text-dim">{fmtLatLon(twin.lat, twin.lon)} · match {twin.score.toFixed(2)} of 1</p>
-            <ul className="mt-3 grid gap-1.5 border-y border-line py-3">
-              <Fact ok={twin.beats_null}>{twin.beats_null ? "Beats the shuffled-season baseline" : "Does not beat the shuffled-season baseline"}</Fact>
-              <Fact ok={twin.robust >= 0.9}>Stays in the top 50 under {pct(twin.robust)} of random weightings</Fact>
-              <Fact ok={!twin.famous}>{twin.famous ? `Already a known analog (${twin.famous})` : "Not one of the famous analog sites"}</Fact>
-              {site.cleaning !== "n/a" && (
-                <Fact ok={twin.wind_tag === site.cleaning}>
-                  {twin.wind_tag === site.cleaning ? `Winds are ${twin.wind_tag}, as at ${site.name}'s site` : `Winds are ${twin.wind_tag} here; ${site.name}'s site was ${site.cleaning}`}
-                </Fact>
-              )}
-              {site.reliability < 0.5 && <Fact ok={false}>The Mars cell has few direct observations</Fact>}
-            </ul>
-
-            <h3 className="mt-4 text-[13px] font-medium">Candidate test window</h3>
-            <p className="mt-0.5 text-[12px] leading-snug text-dim">
-              To rehearse {site.place}&apos;s dustiest stretch, the pattern says <span className="text-dust">{twin.test_months.join(", ")}</span>. A hypothesis to check on site, not a guarantee.
-            </p>
-            <div className="mt-2"><Calendar twin={twin} site={site} month={month} setMonth={setMonth} /></div>
-
-            <div className="mt-3 flex items-center justify-between">
-              <h3 className="text-[13px] font-medium">Two rings, one year</h3>
-              <button onClick={() => setAligned((a) => !a)} className="label rounded-full border border-line px-2 py-1">{aligned ? "Show raw calendar" : "Line up seasons"}</button>
-            </div>
-            <div className="flex justify-center">
-              <DustRing mars={site.shape} earth={twin.shape} shift={twin.shift} aligned={aligned} highlight={month} size={250}
-                title={`Dust rings for ${site.place} (Mars) and ${twin.place} (Earth)`} />
-            </div>
-            <p className="text-[11px] leading-snug text-dim">
-              <span className="text-mars">Mars</span> and <span className="text-earth">Earth</span>. The Earth ring is turned by {twin.shift} month{twin.shift === 1 ? "" : "s"} so the seasons line up.
-            </p>
-
-            <h3 className="mt-4 text-[13px] font-medium">What matches</h3>
-            <div className="mt-1 grid gap-1.5">
-              {([["Seasonal shape", twin.components.season], ["Storminess", twin.components.storminess], ["Usual haze (rank on own planet)", twin.components.haze], ["Year-to-year swing", twin.components.variability]] as const).map(([k, v]) => (
-                <div key={k}><div className="flex justify-between text-[12px]"><span className="text-dim">{k}</span><span className="num">{pct(v)}</span></div><Bar v={v} /></div>
-              ))}
-            </div>
-
-            <details className="mt-4 border-t border-line pt-3" open>
-              <summary className="cursor-pointer text-[13px] font-medium">What can never match <span className="num text-dim">({LIMITS.length})</span></summary>
-              <ul className="mt-2 grid gap-1.5">
-                {LIMITS.map(([k, v]) => <li key={k} className="text-[12px] leading-snug text-dim"><span className="text-ink">{k}.</span> {v}</li>)}
-              </ul>
-            </details>
+        {site && (
+          <div className="pointer-events-none absolute inset-x-0 top-6 grid grid-cols-2 text-center max-md:top-auto max-md:bottom-3">
+            <p className="text-[13px]"><span className="text-mars">Mars</span> <span className="text-dim">{site.place}</span></p>
+            <p className="text-[13px]"><span className="text-earth">Earth</span> <span className="text-dim">{twin ? `${twin.near}, ${twin.country}` : "…"}</span></p>
           </div>
         )}
-      </section>
+        <div className="absolute inset-x-0 bottom-0 p-6 max-md:hidden">
+          {story == null && <div className="mx-auto max-w-[560px]"><YearBar month={month} setMonth={setMonth} playing={playing} setPlaying={setPlaying} site={site} twin={twin} /></div>}
+          <p className="mx-auto mt-3 max-w-[640px] text-center text-[11px] leading-4 text-mute">Mars dust: Montabone et al. (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). The haze animation illustrates the dust record; it is not a soiling or power prediction. Story narration is SI-generated speech (ElevenLabs)</p>
+        </div>
+      </div>
 
-      {/* year scrubber */}
-      <footer className="z-10 p-4 md:absolute md:inset-x-0 md:bottom-0">
-        {story == null && <YearBar month={month} setMonth={setMonth} playing={playing} setPlaying={setPlaying} site={site} twin={twin} />}
-        <p className="mt-2 text-center text-[10px] text-dim">Mars dust: Montabone et al. climatology (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). Haze animation is an illustration driven by the dust record, not a soiling or power prediction. Story narration is SI-generated speech (ElevenLabs).</p>
-      </footer>
+      {/* Earth sidebar */}
+      <aside className="surface scroll z-10 md:overflow-y-auto md:border-l md:border-line" aria-label="Earth twins">
+        <div className="flex items-center justify-between gap-3 px-5 pb-5 pt-5 max-md:hidden">{actions}</div>
+        <Section title={site ? `Earth twins of ${site.place}` : "Earth twins"}>
+          <div className="-mx-3 mb-3 md:hidden"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div>
+          <div className="-mx-3">{file ? <TwinList file={file} ti={ti} setTi={setTi} /> : <p className="px-3 py-6 text-[13px] text-dim">Matching…</p>}</div>
+        </Section>
+
+        {twin && site && (
+          <>
+            <Section title={`Test card for ${site.name}`}>
+              <h2 className="text-[20px] font-semibold leading-6">{twin.place}</h2>
+              <p className="num mt-1 text-[12px] text-mute">{fmtLatLon(twin.lat, twin.lon)} · match {twin.score.toFixed(2)} of 1</p>
+              <ul className="mt-4 grid gap-2">
+                <Fact ok={twin.beats_null}>{twin.beats_null ? "Beats the shuffled-season baseline" : "Does not beat the shuffled-season baseline"}</Fact>
+                <Fact ok={twin.robust >= 0.9}>In the top 50 under {pct(twin.robust)} of random weightings</Fact>
+                <Fact ok={!twin.famous}>{twin.famous ? `Already a known analog (${twin.famous})` : "Not one of the famous analog sites"}</Fact>
+                {site.cleaning !== "n/a" && (
+                  <Fact ok={twin.wind_tag === site.cleaning}>
+                    {twin.wind_tag === site.cleaning ? `Winds are ${twin.wind_tag}, as at ${site.name}'s site` : `Winds are ${twin.wind_tag} here; ${site.name}'s site was ${site.cleaning}`}
+                  </Fact>
+                )}
+                {site.reliability < 0.5 && <Fact ok={false}>The Mars cell has few direct observations</Fact>}
+              </ul>
+            </Section>
+
+            <Section title="Candidate test window" aside={<span className="num text-[13px] text-dust">{monthRange(twin.test_months)}</span>}>
+              <p className="mb-4 text-[13px] leading-5 text-dim">The months that line up with {site.place}&apos;s dustiest stretch. A hypothesis to check on site</p>
+              <Calendar twin={twin} site={site} month={month} setMonth={setMonth} />
+            </Section>
+
+            <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
+              <div className="-mx-2 flex justify-center">
+                <DustRing mars={site.shape} earth={twin.shape} shift={twin.shift} aligned={aligned} highlight={month} size={280}
+                  title={`Dust rings for ${site.place} (Mars) and ${twin.place} (Earth)`} />
+              </div>
+              <p className="text-[12px] leading-4 text-mute"><span className="text-mars">Mars</span> and <span className="text-earth">Earth</span>. The Earth ring is turned {twin.shift} month{twin.shift === 1 ? "" : "s"} so the seasons line up</p>
+            </Section>
+
+            <Section title="What matches">
+              <dl className="grid gap-4">
+                <Meter label="Seasonal shape" value={pct(twin.components.season)} v={twin.components.season} />
+                <Meter label="Storminess" value={pct(twin.components.storminess)} v={twin.components.storminess} />
+                <Meter label="Usual haze, ranked on its own planet" value={pct(twin.components.haze)} v={twin.components.haze} />
+                <Meter label="Year-to-year swing" value={pct(twin.components.variability)} v={twin.components.variability} />
+              </dl>
+            </Section>
+
+            <Section title="What can never match">
+              <ul className="grid gap-3">
+                {LIMITS.map(([k, v]) => <li key={k} className="text-[13px] leading-5 text-dim"><span className="text-ink">{k}</span><br />{v}</li>)}
+              </ul>
+            </Section>
+          </>
+        )}
+        <p className="border-t border-line px-5 py-5 text-[11px] leading-4 text-mute md:hidden">Mars dust: Montabone et al. (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). Story narration is SI-generated speech (ElevenLabs)</p>
+      </aside>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}
       {showEv && ev && site && <EvidencePanel ev={ev} site={site} expectations={expectations} onClose={() => setShowEv(false)} />}

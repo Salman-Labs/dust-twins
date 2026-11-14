@@ -3,7 +3,7 @@
 // Mars sits fixed (12 Ls bins, Ls 0 at top). The Earth ring rotates by the season shift until it lines up.
 import { MONTHS } from "@/lib/types";
 
-const C = 160, R0 = 40, R1 = 128, VMAX = 2.4;
+const C = 160, R0 = 44, R1 = 122, VMAX = 2.4;
 
 const pt = (i: number, v: number, n = 12) => {
   const a = ((i + 0.5) / n) * Math.PI * 2 - Math.PI / 2;
@@ -39,30 +39,30 @@ export default function DustRing(props: {
       {[1, 2].map((v) => (
         <circle key={v} cx={C} cy={C} r={R0 + (v / VMAX) * (R1 - R0)} fill="none" stroke="var(--line)" strokeDasharray={v === 1 ? "0" : "2 4"} />
       ))}
-      <text x={C} y={C - (R0 + (1 / VMAX) * (R1 - R0)) - 3} textAnchor="middle" className="num" fontSize="7" fill="var(--dim)">average</text>
+      <text x={C} y={C - (R0 + (1 / VMAX) * (R1 - R0)) - 3} textAnchor="middle" className="num" fontSize="10" fill="var(--mute)">avg</text>
       {/* Mars dust-storm season (Ls 180-360) */}
-      <path d={`M${C},${C + R1 + 8} A${R1 + 8},${R1 + 8} 0 0 1 ${C},${C - R1 - 8}`} fill="none" stroke="var(--mars)" strokeOpacity="0.28" strokeWidth="2" />
+      <path d={`M${C},${C + R1 + 8} A${R1 + 8},${R1 + 8} 0 0 1 ${C},${C - R1 - 8}`} fill="none" stroke="var(--mars)" strokeOpacity="0.35" strokeWidth="1.5" />
       {[0, 90, 180, 270].map((ls) => {
         const a = (ls / 360) * Math.PI * 2 - Math.PI / 2;
-        return <text key={ls} x={C + (R1 + 20) * Math.cos(a)} y={C + (R1 + 20) * Math.sin(a) + 3} textAnchor="middle" className="num" fontSize="8" fill="var(--mars)">Ls {ls}°</text>;
+        return <text key={ls} x={C + (R1 + 24) * Math.cos(a)} y={C + (R1 + 24) * Math.sin(a) + 4} textAnchor="middle" className="num" fontSize="11" fill="var(--mute)">{ls}°</text>;
       })}
       {/* each Mars year, faint: global-storm years show up as spikes */}
       {props.marsYears?.map((y, i) => (
         <path key={i} d={ringPath(y.map((v) => v / mean))} fill="none" stroke="var(--mars)" strokeOpacity="0.16" strokeWidth="0.8" />
       ))}
-      <path d={ringPath(mars)} fill="var(--mars)" fillOpacity="0.14" stroke="var(--mars)" strokeWidth="2" />
+      <path d={ringPath(mars)} fill="var(--mars)" fillOpacity="0.12" stroke="var(--mars)" strokeWidth="1.75" />
       {props.emphYear != null && props.marsYears?.[props.emphYear] && (
         <path d={ringPath(props.marsYears[props.emphYear].map((v) => v / mean))} fill="none" stroke="var(--ink)" strokeWidth="1.8" />
       )}
       {earth && (
         <g className="ring-rot" style={{ transform: `rotate(${rot}deg)` }}>
-          <path d={ringPath(earth)} fill="var(--earth)" fillOpacity="0.1" stroke="var(--earth)" strokeWidth="2" />
+          <path d={ringPath(earth)} fill="var(--earth)" fillOpacity="0.08" stroke="var(--earth)" strokeWidth="1.75" />
           {MONTHS.map((m, j) => {
             const a = ((j + 0.5) / 12) * Math.PI * 2 - Math.PI / 2;
             const on = highlight === j;
             return (
-              <text key={m} x={C + (R0 - 13) * Math.cos(a)} y={C + (R0 - 13) * Math.sin(a) + 2.5} textAnchor="middle" className="num"
-                fontSize={on ? 8.5 : 6.5} fontWeight={on ? 700 : 400} fill={on ? "var(--ink)" : "var(--earth)"}>{m[0]}</text>
+              <text key={m} x={C + (R0 - 15) * Math.cos(a)} y={C + (R0 - 15) * Math.sin(a) + 3.5} textAnchor="middle" className="num"
+                fontSize={10} fontWeight={on ? 600 : 400} fill={on ? "var(--ink)" : "var(--earth)"}>{m[0]}</text>
             );
           })}
           {highlight != null && (() => { const [x, y] = pt(highlight, earth[highlight]); return <circle cx={x} cy={y} r="4" fill="var(--ink)" />; })()}

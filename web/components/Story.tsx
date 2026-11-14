@@ -87,11 +87,11 @@ export default function Story(props: {
       <div className="flex min-h-0 flex-1 items-center justify-center p-4 md:p-6">
         {step === 0 && (
           <figure className="max-w-3xl overflow-hidden">
-            <div className="overflow-hidden rounded-lg border border-line">
+            <div className="overflow-hidden rounded-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/tex/insight_selfie.jpg" alt="InSight's final selfie, its solar panels covered in red dust" className="kenburns w-full" />
             </div>
-            <figcaption className="label mt-2">InSight&apos;s final selfie, 24 April 2022 · NASA/JPL-Caltech</figcaption>
+            <figcaption className="mt-2 text-[12px] text-mute">InSight&apos;s final selfie, 24 April 2022 · NASA/JPL-Caltech</figcaption>
           </figure>
         )}
         {step === 1 && site && (
@@ -100,53 +100,53 @@ export default function Story(props: {
             <div className="pointer-events-auto mt-1 flex max-w-xl flex-wrap justify-center gap-1" role="group" aria-label="Mars year">
               {(site.mars_years ?? []).map((my, i) => (
                 <button key={my} onClick={() => setYear(year === i ? null : i)} aria-pressed={year === i}
-                  className={`num rounded-md border px-2 py-1 text-[11px] ${year === i ? "border-ink bg-white/10" : STORM_YEARS[my] ? "border-mars/60 text-mars" : "border-line text-dim"}`}>MY{my}</button>
+                  className={`num row h-8 rounded-md px-2 text-[11px] ${year === i ? "bg-white/[0.14] text-ink" : STORM_YEARS[my] ? "bg-white/[0.05] text-mars" : "bg-white/[0.05] text-dim"}`}>MY{my}</button>
               ))}
             </div>
-            <p className="mt-2 h-4 text-[12px] text-dim">{year != null && site.mars_years ? (STORM_YEARS[site.mars_years[year]] ?? `Mars year ${site.mars_years[year]}: an ordinary year`) : "Orange years had planet-wide dust storms"}</p>
+            <p className="mt-2 h-4 text-[12px] text-dim">{year != null && site.mars_years ? (STORM_YEARS[site.mars_years[year]] ?? `Mars year ${site.mars_years[year]}: an ordinary year`) : "The three years in red had planet-wide dust storms"}</p>
           </div>
         )}
         {step === 3 && site && twin && (
           <div className="flex flex-col items-center">
             <DustRing mars={site.shape} earth={twin.shape} shift={turn} aligned title="Mars and Earth dust rings" size={380} />
             <div className="pointer-events-auto mt-1 flex items-center gap-3">
-              <button onClick={() => setTurn((k) => (k + 11) % 12)} aria-label="Turn Earth's year back one month" className="grid h-10 w-10 place-items-center rounded-lg border border-line text-lg hover:border-earth">‹</button>
+              <button onClick={() => setTurn((k) => (k + 11) % 12)} aria-label="Turn Earth's year back one month" className="row grid h-10 w-10 place-items-center rounded-lg bg-white/[0.07] text-lg hover:bg-white/[0.12]">‹</button>
               <div className="w-56 text-center">
-                <div className="h-1.5 w-full rounded-full bg-white/10"><div className="h-full rounded-full transition-all" style={{ width: `${Math.max(0, match) * 100}%`, background: locked ? "var(--ok)" : "var(--earth)" }} /></div>
-                <p className="num mt-1.5 text-[12px]">{locked ? "locked" : `turned ${turn} mo`} · rhythm match {Math.round(Math.max(0, match) * 100)}%</p>
+                <div className="h-[2px] w-full bg-white/10"><div className="h-full" style={{ width: `${Math.max(0, match) * 100}%`, background: locked ? "var(--ok)" : "var(--earth)" }} /></div>
+                <p className="num mt-2 text-[12px]">{locked ? "locked" : `turned ${turn} mo`} · rhythm match {Math.round(Math.max(0, match) * 100)}%</p>
               </div>
-              <button onClick={() => setTurn((k) => (k + 1) % 12)} aria-label="Turn Earth's year forward one month" className="grid h-10 w-10 place-items-center rounded-lg border border-line text-lg hover:border-earth">›</button>
+              <button onClick={() => setTurn((k) => (k + 1) % 12)} aria-label="Turn Earth's year forward one month" className="row grid h-10 w-10 place-items-center rounded-lg bg-white/[0.07] text-lg hover:bg-white/[0.12]">›</button>
             </div>
             <p className="mt-2 text-[12px] text-dim"><span className="text-mars">Mars</span> stays put. <span className="text-earth">Earth</span> turns: {MONTHS[0]} now sits where Mars has Ls {turn * 30}°.</p>
           </div>
         )}
         {step === 4 && e && (
-          <div className="pointer-events-auto grid grid-cols-3 gap-6 rounded-lg bg-black/70 px-8 py-6 text-center">
+          <div className="surface pointer-events-auto grid grid-cols-3 gap-8 rounded-2xl border border-line px-8 py-6 text-center">
             {[[`${e.shuffle.top10_above_null}/10`, "top twins beat scrambled seasons"], [e.rover ? e.rover.r.toFixed(2) : "–", "rover vs orbit agreement"], [`${10 - e.famous_in_top10}/10`, "are not famous analog sites"]].map(([n, l]) => (
-              <div key={l}><p className="font-serif text-4xl text-dust">{n}</p><p className="mt-1 max-w-[9rem] text-[12px] leading-snug text-dim">{l}</p></div>
+              <div key={l}><p className="num text-[32px] leading-none text-ink">{n}</p><p className="mx-auto mt-2 max-w-[9rem] text-[12px] leading-4 text-dim">{l}</p></div>
             ))}
           </div>
         )}
       </div>
 
       <div className="pointer-events-auto mx-auto mb-4 w-full max-w-2xl px-4 md:mb-6">
-        <div className="panel p-4 md:p-5">
+        <div className="surface rounded-2xl border border-line p-5">
           <div className="flex gap-1" aria-hidden>
             {Array.from({ length: STORY_STEPS }, (_, i) => (
-              <span key={i} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/12">
-                <span key={`${i}-${step}`} className={`block h-full bg-dust ${i < step ? "w-full" : i === step ? (props.auto ? "story-fill" : "w-full") : "w-0"}`} style={i === step ? { animationDuration: `${SECONDS[step]}s` } : undefined} />
+              <span key={i} className="h-[2px] flex-1 overflow-hidden bg-white/10">
+                <span key={`${i}-${step}`} className={`block h-full bg-ink ${i < step ? "w-full" : i === step ? (props.auto ? "story-fill" : "w-full") : "w-0"}`} style={i === step ? { animationDuration: `${SECONDS[step]}s` } : undefined} />
               </span>
             ))}
           </div>
-          <p className="label mt-3 text-dust">{kicker}</p>
-          <p className="mt-1 text-lg font-medium leading-snug md:text-[22px]">{text}</p>
+          <p className="mt-4 text-[13px] text-dim">{kicker}</p>
+          <p className="mt-1 text-[18px] font-medium leading-7 md:text-[21px] md:leading-8">{text}</p>
           <div className="mt-3 flex items-center gap-2 text-[13px]">
-            <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className="rounded-lg border border-line px-3 py-1.5 disabled:opacity-30">Back</button>
+            <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">Back</button>
             {step + 1 < STORY_STEPS
-              ? <button onClick={next} className="rounded-lg bg-dust px-3.5 py-1.5 font-medium text-black">Next</button>
-              : <><button onClick={() => setStep(null)} className="rounded-lg bg-dust px-3.5 py-1.5 font-medium text-black">Open the test card</button>
-                  <button onClick={props.openEvidence} className="rounded-lg border border-line px-3 py-1.5">See the evidence</button></>}
-            {hasAudio && <button onClick={() => setMuted((m) => !m)} aria-pressed={muted} className="ml-auto rounded-lg border border-line px-3 py-1.5">{muted ? "Sound off" : "Sound on"}</button>}
+              ? <button onClick={next} className="row h-9 rounded-lg bg-ink px-3.5 font-medium text-bg hover:bg-white">Next</button>
+              : <><button onClick={() => setStep(null)} className="row h-9 rounded-lg bg-ink px-3.5 font-medium text-bg hover:bg-white">Open the test card</button>
+                  <button onClick={props.openEvidence} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">See the evidence</button></>}
+            {hasAudio && <button onClick={() => setMuted((m) => !m)} aria-pressed={muted} className="row ml-auto h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">{muted ? "Sound off" : "Sound on"}</button>}
             <button onClick={() => setStep(null)} className={`${hasAudio ? "" : "ml-auto"} px-2 py-1.5 text-dim`}>Skip</button>
           </div>
         </div>
