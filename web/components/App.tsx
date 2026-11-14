@@ -406,7 +406,7 @@ export default function App() {
       {/* year scrubber */}
       <footer className="z-10 p-4 md:absolute md:inset-x-0 md:bottom-0">
         {story == null && <YearBar month={month} setMonth={setMonth} playing={playing} setPlaying={setPlaying} site={site} twin={twin} />}
-        <p className="mt-2 text-center text-[10px] text-dim">Mars dust: Montabone et al. climatology (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). Haze animation is an illustration driven by the dust record, not a soiling or power prediction.</p>
+        <p className="mt-2 text-center text-[10px] text-dim">Mars dust: Montabone et al. climatology (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). Haze animation is an illustration driven by the dust record, not a soiling or power prediction. Story narration is SI-generated speech (ElevenLabs).</p>
       </footer>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}
