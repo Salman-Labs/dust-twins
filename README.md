@@ -2,6 +2,8 @@
 
 **Where on Earth does the sky carry dust the way it does at a Mars landing site, and in which months?**
 
+**Live app: https://dust-twins.vercel.app** · story mode: https://dust-twins.vercel.app/?story=1
+
 NASA Space Apps Challenge 2026 · Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars* · Islamabad
 
 Dust on its solar panels ended NASA's InSight lander in 2022, and a planet-wide dust storm ended the Opportunity rover in 2018. Dust Twins compares 13 Mars years of orbital dust records with 24 years of NASA's Earth dust record and finds the places on Earth whose dust *behaves* most like each landing site's, then turns each match into a month-by-month test calendar.
