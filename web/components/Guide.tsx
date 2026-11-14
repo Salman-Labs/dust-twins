@@ -4,10 +4,10 @@
 import { useEffect } from "react";
 
 const STEPS: [string, string, string][] = [
-  ["site", "Pick a Mars landing site", "Five sites where rovers and landers worked. The ring shows that site's dust year from 13 Mars years of orbiter data"],
-  ["twins", "Read its Earth twins", "The ten places on Earth whose sky carries dust on the most similar yearly pattern. Click one and both globes turn to it"],
-  ["calendar", "Check the test window", "Each Earth month lines up with a Mars season. The highlighted months are the ones that rehearse the site's dustiest stretch"],
-  ["challenge", "Argue against it", "A model reads that twin's figures and gives the strongest reasons the match could fail. Then open Evidence for the method checks"],
+  ["site", "Pick a Mars landing site", "Its ring is one year of dust"],
+  ["twins", "Read its Earth twins", "Ten places with the closest dust year"],
+  ["calendar", "Check the test window", "The months that line up with Mars"],
+  ["challenge", "Argue against it", "A model lists why the match could fail"],
 ];
 
 /** Scroll a marked section into view and outline it briefly. */
@@ -25,40 +25,29 @@ export default function Guide({ onClose, onStory }: { onClose: () => void; onSto
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [onClose]);
-  const H = ({ children }: { children: React.ReactNode }) => <h3 className="mt-6 text-[13px] font-medium text-dim">{children}</h3>;
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
-      <div className="surface scroll max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl p-6 md:p-8" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="How Dust Twins works">
-        <h2 className="text-[26px] font-semibold leading-tight">How Dust Twins works</h2>
-        <p className="mt-2 text-[14px] leading-6 text-dim">
-          Dust ended two NASA Mars missions by burying their solar panels. This tool finds the places on Earth where dust in the sky behaves most like it does at a Mars landing site, and the months when it does, so Mars solar and dust-cleaning hardware can be tried there first
-        </p>
+      <div className="surface w-full max-w-[520px] rounded-2xl p-6 md:p-7" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="How Dust Twins works">
+        <h2 className="text-[22px] font-semibold leading-tight">How Dust Twins works</h2>
+        <p className="mt-2 text-[14px] leading-6 text-dim">Find where on Earth dust behaves like it does at a Mars landing site, and in which months, so Mars solar hardware can be tested there first</p>
 
-        <H>Try it in four steps</H>
-        <ol className="mt-2">
+        <ol className="mt-5">
           {STEPS.map(([id, title, text], i) => (
-            <li key={id} className="grid grid-cols-[1.75rem_1fr_auto] items-start gap-x-2 border-t border-line py-3">
-              <span className="num text-[12px] leading-5 text-mute">{i + 1}</span>
-              <span><span className="block text-[14px] font-medium leading-5">{title}</span><span className="mt-0.5 block text-[13px] leading-5 text-dim">{text}</span></span>
+            <li key={id} className="grid grid-cols-[1.5rem_1fr_auto] items-center gap-x-2 border-t border-line py-2.5">
+              <span className="num text-[12px] text-mute">{i + 1}</span>
+              <span><span className="block text-[14px] font-medium leading-5">{title}</span><span className="block text-[12px] leading-4 text-dim">{text}</span></span>
               <button onClick={() => { onClose(); setTimeout(() => pointAt(id), 150); }} className="row h-8 rounded-lg bg-white/[0.07] px-3 text-[12px] hover:bg-white/[0.12]">Show me</button>
             </li>
           ))}
         </ol>
 
-        <H>How a match is made</H>
-        <p className="mt-2 text-[13px] leading-5 text-dim">
-          Every place on both planets gets the same four numbers: the shape of its dust year, how often months run stormy, how hazy it usually is compared with the rest of its planet, and how much it changes from year to year. Earth&apos;s year is turned month by month until its shape fits the Mars site best; that turn is what builds the test calendar. Only patterns and ranks are compared, never raw values, because the two planets are measured differently
-        </p>
+        <details className="border-t border-line py-3">
+          <summary className="cursor-pointer text-[13px] text-dim hover:text-ink">How a match is made, and the data behind it</summary>
+          <p className="mt-2 text-[13px] leading-5 text-dim">Every place on both planets gets four numbers: the shape of its dust year, how often months run stormy, how hazy it is against the rest of its planet, and how much it changes year to year. Earth&apos;s year is turned until its shape fits the Mars site; that turn builds the test calendar</p>
+          <p className="mt-2 text-[13px] leading-5 text-dim">Mars: 13 Mars years of orbiter dust maps. Earth: 24 years of NASA MERRA-2. Ground truth: dust measured by Opportunity, Spirit and InSight. These are candidate test windows, not predictions of dust settling or power loss</p>
+        </details>
 
-        <H>Where the data comes from</H>
-        <ul className="mt-2 grid gap-1.5 text-[13px] leading-5 text-dim">
-          <li><span className="text-ink">Mars</span> 13 Mars years of daily dust maps built from NASA orbiter instruments (Montabone et al.)</li>
-          <li><span className="text-ink">Earth</span> 24 years of NASA&apos;s MERRA-2 dust record, 1999 to 2022, plus surface wind</li>
-          <li><span className="text-ink">Ground truth</span> dust measured by the Opportunity, Spirit and InSight missions themselves</li>
-        </ul>
-        <p className="mt-3 text-[13px] leading-5 text-dim">Results are computed once by an open pipeline and shown as they are. These are candidate test windows to investigate, not predictions of dust settling or power loss</p>
-
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <button onClick={onClose} className="row h-9 rounded-lg bg-ink px-3.5 text-[13px] font-medium text-bg hover:bg-white">Start exploring</button>
           <button onClick={onStory} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">Play the 30-second story</button>
         </div>
