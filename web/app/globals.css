@@ -30,13 +30,18 @@
 }
 
 html, body { background: var(--bg); color: var(--ink); font-family: var(--font-geist-sans), system-ui, sans-serif; }
-body { overflow: hidden; }
+@media (min-width: 768px) { body { overflow: hidden; } }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--dust); outline-offset: 2px; border-radius: 4px; }
-.panel { background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(14px); border-radius: 14px; }
+.panel { background: rgba(9, 10, 15, 0.9); border: 1px solid var(--line); border-radius: 10px; }
 .label { font-size: 11.5px; font-weight: 500; color: var(--dim); }
 .font-serif { font-family: var(--font-serif), sans-serif; font-stretch: 118%; font-weight: 650; letter-spacing: -0.015em; }
 .num { font-family: var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; }
 .scroll::-webkit-scrollbar { width: 6px; } .scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .ring-rot { transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1); transform-origin: center; transform-box: view-box; }
 @media (prefers-reduced-motion: reduce) { .ring-rot { transition: none; } }
+@keyframes kenburns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.16) translate(-2%, -3%); } }
+.kenburns { animation: kenburns 9s ease-out both; }
+@keyframes storyfill { from { width: 0; } to { width: 100%; } }
+.story-fill { animation: storyfill linear both; }
+@media (prefers-reduced-motion: reduce) { .kenburns, .story-fill { animation: none; } }

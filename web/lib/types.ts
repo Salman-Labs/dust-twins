@@ -1,13 +1,14 @@
 export type Site = {
   id: string; name: string; place: string; lat: number; lon: number; years: number[] | string;
   cleaning: "calm" | "gusty" | "n/a"; note: string; cell: { lat: number; lon: number };
-  clim: number[]; shape: number[]; storm: number; haze: number; var: number; reliability: number; series: number[][];
+  clim: number[]; shape: number[]; storm: number; haze: number; var: number; reliability: number; series: number[][]; mars_years?: number[];
 };
 export type Twin = {
   lat: number; lon: number; place: string; famous: string | null; score: number;
   components: { season: number; storminess: number; haze: number; variability: number };
   shift: number; mars_bin: number[]; month_match: number[]; test_months: string[];
   clim: number[]; shape: number[]; storm: number; haze: number; var: number; robust: number; beats_null: boolean;
+  wind: number; wind_pct: number; wind_tag: "calm" | "moderate" | "gusty"; near: string; region: string; country: string;
 };
 export type TwinFile = { site: string; twins: Twin[]; scale: { lo: number; hi: number } };
 export type SiteEvidence = {
@@ -17,6 +18,7 @@ export type SiteEvidence = {
   mars_self_test: { neighbour_percentile: number };
   pressure_sensitivity: { spearman: number; top50_overlap: number };
   famous_in_top10: number;
+  rover: null | { n: number; r: number; pairs: { my: number; bin: number; rover: number; orbit: number }[] };
 };
 export type Evidence = { sites: Record<string, SiteEvidence>; meta: Record<string, unknown> };
 

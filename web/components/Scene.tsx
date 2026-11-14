@@ -149,6 +149,7 @@ function Thread({ get, from, to }: { get: (k: string) => THREE.Object3D | undefi
     A.getWorldPosition(a); B.getWorldPosition(b);
     mid.copy(a).add(b).multiplyScalar(0.5); mid.z += 1.1; mid.y += 0.5;
     line.current.setPoints(a, b, mid);
+    line.current.computeLineDistances?.();   // dashes need fresh distances after the points move
     line.current.material.dashOffset = -clock.elapsedTime * 0.6;
   });
   return <QuadraticBezierLine ref={line} start={[0, 0, 0]} end={[0, 0, 0]} color="#ffb040" lineWidth={2} dashed dashScale={6} dashSize={0.6} gapSize={0.35} transparent opacity={0.95} />;
@@ -166,9 +167,9 @@ function Rig({ children }: { children: (l: { mars: [number, number, number]; ear
     const d = Math.max(r * 1.18, avail * 0.26);
     return <>{children({ mars: [cx - d, viewport.height * 0.03, 0], earth: [cx + d, viewport.height * 0.03, 0], r })}</>;
   }
-  // phone: globes side by side in the top half, panels in a sheet below
-  const r = Math.min(viewport.width * 0.21, viewport.height * 0.14);
-  return <>{children({ mars: [-r * 1.15, viewport.height * 0.22, 0], earth: [r * 1.15, viewport.height * 0.22, 0], r })}</>;
+  // phone: the canvas is its own block above the panels; globes side by side
+  const r = Math.min(viewport.width * 0.225, viewport.height * 0.36);
+  return <>{children({ mars: [-r * 1.12, -viewport.height * 0.06, 0], earth: [r * 1.12, -viewport.height * 0.06, 0], r })}</>;
 }
 
 export default function Scene(props: {

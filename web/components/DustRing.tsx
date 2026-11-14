@@ -27,7 +27,7 @@ function ringPath(shape: number[]) {
 
 export default function DustRing(props: {
   mars: number[]; marsYears?: number[][]; earth?: number[] | null; shift?: number; aligned?: boolean;
-  highlight?: number | null; size?: number; title: string;
+  highlight?: number | null; size?: number; title: string; emphYear?: number | null;
 }) {
   const { mars, earth, shift = 0, aligned = true, highlight = null, size = 300 } = props;
   const mean = mars.reduce((a, b) => a + b, 0) / mars.length || 1;
@@ -51,6 +51,9 @@ export default function DustRing(props: {
         <path key={i} d={ringPath(y.map((v) => v / mean))} fill="none" stroke="var(--mars)" strokeOpacity="0.16" strokeWidth="0.8" />
       ))}
       <path d={ringPath(mars)} fill="var(--mars)" fillOpacity="0.14" stroke="var(--mars)" strokeWidth="2" />
+      {props.emphYear != null && props.marsYears?.[props.emphYear] && (
+        <path d={ringPath(props.marsYears[props.emphYear].map((v) => v / mean))} fill="none" stroke="var(--ink)" strokeWidth="1.8" />
+      )}
       {earth && (
         <g className="ring-rot" style={{ transform: `rotate(${rot}deg)` }}>
           <path d={ringPath(earth)} fill="var(--earth)" fillOpacity="0.1" stroke="var(--earth)" strokeWidth="2" />
