@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DustRing from "./DustRing";
 import Story from "./Story";
-import Guide from "./Guide";
+import Guide, { pointAt } from "./Guide";
 import { Ask, Challenge } from "./Planner";
 import type { Marker } from "./Scene";
 import { type Evidence, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
@@ -329,8 +329,11 @@ export default function App() {
     <main className="relative w-full md:grid md:h-dvh md:grid-cols-[300px_1fr_380px] md:overflow-hidden">
       {/* Mars sidebar */}
       <aside className="surface scroll z-10 md:overflow-y-auto md:border-r md:border-line max-md:hidden" aria-label="Mars landing site">
-        <div className="px-5 pb-5 pt-6">
-          <h1 className="text-[22px] font-semibold leading-none">Dust Twins</h1>
+        <div className="surface sticky top-0 z-20 border-b border-line px-5 pb-5 pt-6">
+          <h1 className="flex items-center gap-2.5 text-[22px] font-semibold leading-none">
+            <svg width="26" height="20" viewBox="10 14 44 36" aria-hidden><circle cx="27" cy="32" r="15" fill="none" stroke="var(--mars)" strokeWidth="4" /><circle cx="37" cy="32" r="15" fill="none" stroke="var(--earth)" strokeWidth="4" /></svg>
+            Dust Twins
+          </h1>
           <p className="mt-2 text-[13px] leading-5 text-dim">Where on Earth the sky carries dust like a Mars landing site, and in which months</p>
         </div>
         <Section title="Mars landing site" guide="site"><div className="-mx-3"><SiteList sites={sites} siteId={siteId} setSiteId={setSiteId} /></div></Section>
@@ -403,7 +406,18 @@ export default function App() {
 
       {/* Earth sidebar */}
       <aside className="surface scroll z-10 md:overflow-y-auto md:border-l md:border-line" aria-label="Earth twins">
-        <div className="flex items-center justify-between gap-3 px-5 pb-5 pt-5 max-md:hidden">{actions}</div>
+        <div className="surface sticky top-0 z-20 border-b border-line px-5 py-4 max-md:hidden">
+          {actions}
+          {site && twin && (
+            <button onClick={() => pointAt("card")} className="row -mx-2 mt-3 grid w-[calc(100%+1rem)] grid-cols-[1fr_auto] items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-white/[0.05]" title="Jump to the test card">
+              <span className="min-w-0">
+                <span className="block truncate text-[13px] font-medium leading-5">{twin.near}, {twin.country}</span>
+                <span className="block truncate text-[12px] leading-4 text-dim">Twin {(ti ?? 0) + 1} of {site.name}&apos;s site · test {monthRange(twin.test_months)}</span>
+              </span>
+              <span className="num text-[13px] text-dust">{twin.score.toFixed(2)}</span>
+            </button>
+          )}
+        </div>
         <Section title="Ask a planning question" aside={<span className="text-[11px] text-mute">SI · Gemini</span>}>
           <Ask showing={twin && site ? `${twin.near}, ${twin.country} for ${site.name} · ${monthRange(twin.test_months)}` : null} onAction={(a) => {
             const rank = Math.max(0, (a.rank ?? 1) - 1);
@@ -418,7 +432,7 @@ export default function App() {
 
         {twin && site && (
           <>
-            <Section title={`Test card for ${site.name}`}>
+            <Section title={`Test card for ${site.name}`} guide="card">
               <h2 className="text-[20px] font-semibold leading-6">{twin.place}</h2>
               <p className="num mt-1 text-[12px] text-mute">{fmtLatLon(twin.lat, twin.lon)} · match {twin.score.toFixed(2)} of 1</p>
               <ul className="mt-4 grid gap-2">

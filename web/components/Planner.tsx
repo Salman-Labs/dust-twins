@@ -127,17 +127,22 @@ const Spinner = () => <svg width="12" height="12" viewBox="0 0 16 16" className=
 /** The agent's working, one row per lookup: what it did and what it found. */
 function Trace({ steps, now, tail }: { steps: Step[]; now?: string | null; tail?: React.ReactNode }) {
   return (
-    <ol className="grid gap-2.5">
+    <ol className="trace grid">
       {steps.map((s, i) => (
-        <li key={i} className="trace-row grid grid-cols-[16px_1fr] gap-x-2">
-          <span className="mt-[3px]"><Tick /></span>
+        <li key={i} className="trace-row grid grid-cols-[16px_1fr] gap-x-2.5 pb-3">
+          <span className="trace-mark mt-[3px]"><Tick /></span>
           <span>
             <span className="block text-[13px] leading-5">{TOOL_WORDS[s.tool] ?? s.tool}</span>
-            {s.found && <span className="block text-[12px] leading-4 text-dim">{s.found}</span>}
+            {s.found && <span className="trace-found block text-[12px] leading-4 text-dim">{s.found}</span>}
           </span>
         </li>
       ))}
-      {now && <li className="grid grid-cols-[16px_1fr] gap-x-2"><span className="mt-[3px]"><Spinner /></span><span className="text-[13px] leading-5 text-dim">{now}</span></li>}
+      {now && (
+        <li key={`now-${steps.length}`} className="trace-row trace-now grid grid-cols-[16px_1fr] gap-x-2.5 pb-3">
+          <span className="mt-[3px]"><Spinner /></span>
+          <span className="text-[13px] leading-5 text-dim">{now}<span className="dots" aria-hidden><i>.</i><i>.</i><i>.</i></span></span>
+        </li>
+      )}
       {tail}
     </ol>
   );

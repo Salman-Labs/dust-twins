@@ -1,0 +1,255 @@
+{
+ "challenge": {
+  "insight-1": {
+   "reasons": [
+    {
+     "title": "Weak Split Years Top Fifty Overlap",
+     "detail": "The split years top fifty overlap is only 0.34. This means candidate analogue sites shuffle radically depending on which subsets of years are evaluated, warning engineers that the identified location might not reliably hold its match status over time.",
+     "figures": [
+      "Split-years top 50 overlap: 0.34"
+     ]
+    },
+    {
+     "title": "Unregistered Expectations Undermine Ranking Confidence",
+     "detail": "Pre-registered expectations were listed as none were registered before the run. Without pre-committed benchmarks, the selection pipeline risks tuning itself to historical artifacts rather than genuine, repeatable physical similarities for testing field gear.",
+     "figures": [
+      "Pre-registered expectations: none were registered before the run"
+     ]
+    },
+    {
+     "title": "Split Years Rank Agreement Shows Instability",
+     "detail": "The split years rank agreement is only 0.67. Field teams face noticeable divergence in historical rank correlations between data splits, implying that the match may reflect temporal dataset noise rather than enduring annual atmospheric patterns.",
+     "figures": [
+      "Split-years rank agreement: 0.67"
+     ]
+    }
+   ],
+   "settle": "To settle whether this atmospheric analogue works, ground teams must directly measure local wind speed, dust size distribution, and surface panel deposition rates on site.",
+   "written": 5,
+   "removed": 0
+  },
+  "opportunity-1": {
+   "reasons": [
+    {
+     "title": "Different dust regimes between planets",
+     "detail": "The Earth location belongs to a steady clear-season regime while the landing site faces variable years. With the Earth regime covering only 0.029 of Earth, testing cannot replicate the wider year-to-year swings experienced on Mars.",
+     "figures": [
+      "Earth regime share of Earth: 0.029"
+     ]
+    },
+    {
+     "title": "Surface winds are far too calm",
+     "detail": "The Mars site relied on gusty winds for cleaning, whereas this candidate site has calm winds placing it in the 0.122 percentile for land wind speed. Test hardware will not experience the expected natural wind clearing.",
+     "figures": [
+      "Wind speed percentile: 0.122"
+     ]
+    },
+    {
+     "title": "Poor overlap across split record years",
+     "detail": "Testing candidate stability across split halves of the record yielded an overlap among the top 50 matches of just 0.3. This low consistency means the site ranking is brittle and may fail under different climate samples.",
+     "figures": [
+      "Split-years top 50 overlap: 0.3"
+     ]
+    }
+   ],
+   "settle": "Direct field measurements of local wind gusts and panel dust accumulation rates during candidate months would establish whether natural clearing matches Meridiani Planum conditions.",
+   "written": 5,
+   "removed": 0
+  },
+  "spirit-1": {
+   "reasons": [
+    {
+     "title": "Low Split Years Overlap In Top Fifty",
+     "detail": "The split years top fifty overlap is only 0.28, while the split years rank agreement is 0.556. This means the match depends heavily on which years are sampled, risking an unrepresentative testing environment.",
+     "figures": [
+      "Split-years top 50 overlap: 0.28",
+      "Split-years rank agreement: 0.556"
+     ]
+    },
+    {
+     "title": "Mismatched Annual Atmospheric Dust Regimes",
+     "detail": "Gusev Crater experiences Clear season, variable years covering 0.464 of Mars, while Diplo has Clear season, steady years covering 0.029 of Earth. Only 2 of the top 10 sites share the Martian regime, masking annual variability during tests.",
+     "figures": [
+      "Regime share of Mars: 0.464",
+      "Top 10 in same dust regime: 2"
+     ]
+    },
+    {
+     "title": "Frequent Month Straying During Test Window",
+     "detail": "In June, the pattern match by month is 0.873, yet the month strayed from normal in 4 years of the 24 years of record. Hardware trials in June may encounter anomalous dust conditions rather than typical Martian behaviour.",
+     "figures": [
+      "Pattern match in June: 0.873",
+      "Years June strayed from normal: 4"
+     ]
+    }
+   ],
+   "settle": "Field engineers must measure local wind gusts alongside atmospheric dust opacity and actual panel dust accumulation throughout the candidate test months to verify true clearing behaviour.",
+   "written": 5,
+   "removed": 0
+  },
+  "perseverance-1": {
+   "reasons": [
+    {
+     "title": "Low top candidate overlap across split years",
+     "detail": "The overlap of top fifty candidates when splitting years into halves is only 0.42. A planner cannot be confident this Earth analogue reliably repeats its ranking across different multi-year monitoring periods.",
+     "figures": [
+      "Overlap of top fifty candidates across split years: 0.42"
+     ]
+    },
+    {
+     "title": "Different broad atmospheric dust regime",
+     "detail": "Jezero Crater is classified as Clear season, variable years while Ndele belongs to Sharp season, variable years. Testing hardware here means exposing it to a fundamentally different seasonal dust pattern than Perseverance faces on Mars.",
+     "figures": [
+      "Site dust regime: Clear season, variable years",
+      "Analogue dust regime: Sharp season, variable years"
+     ]
+    },
+    {
+     "title": "Extremely calm local surface winds",
+     "detail": "The analogue wind speed percentile among scored land is only 0.121. Very low wind speeds mean candidate dust-cleaning hardware will not experience natural wind cleaning gusts comparable to windier operational sites.",
+     "figures": [
+      "Wind speed percentile among scored land: 0.121"
+     ]
+    }
+   ],
+   "settle": "Measuring local dust settling rates and wind cleaning on test solar panels at Ndele during March would settle whether dust behaviour mimics Jezero Crater.",
+   "written": 5,
+   "removed": 0
+  },
+  "curiosity-1": {
+   "reasons": [
+    {
+     "title": "Low Split-Years Top Fifty Overlap",
+     "detail": "The split-years top fifty overlap is 0.26, indicating that candidate analogues shift drastically when dividing the record. For field planning, this instability means the location may only superficially resemble the landing site under specific multi-year samples rather than reliably over time.",
+     "figures": [
+      "Split-years top fifty overlap: 0.26"
+     ]
+    },
+    {
+     "title": "Mismatched Annual Dust Regimes",
+     "detail": "The Earth site experiences a clear season with steady years, unlike the Martian site regime of clear season with variable years. An engineer testing hardware will miss the extreme, unpredictable multi-year swings that characterize the environment at Gale Crater.",
+     "figures": [
+      "Earth year-to-year swing: 0.303",
+      "Mars year-to-year swing: 0.451"
+     ]
+    },
+    {
+     "title": "Weak Year-to-Year Swing Match Component",
+     "detail": "The component score for matching year-to-year swings is only 0.68, the lowest among all sub-metrics. Testers evaluating equipment durability cannot rely on this analogue to recreate the wide interannual dust variations observed on Mars.",
+     "figures": [
+      "Year-to-year swing match score: 0.68"
+     ]
+    }
+   ],
+   "settle": "Directly measuring local wind-driven dust accumulation and optical depth variations simultaneously on site throughout the test months would determine if the analogue matches Gale Crater dust behavior.",
+   "written": 5,
+   "removed": 0
+  }
+ },
+ "ask": [
+  {
+   "question": "I am testing a solar panel dust wiper for an InSight-style mission. Where in Pakistan should I test, and in which months?",
+   "text": "For an InSight-style mission, test at Khairpur, Sindh, Pakistan during April, May, June, and July. This candidate analogue achieves a match score of 0.882 against InSight, with calm winds matching the candidate window. However, this location does not share the same dust regime as InSight, and Earth conditions cannot replicate Mars surface pressure below 1% of Earth's, which fundamentally changes how wind lifts and settles atmospheric dust. These candidate windows identify atmospheric dust behaviour analogues rather than predicting dust settling or power loss.",
+   "steps": [
+    {
+     "tool": "get_twins",
+     "args": {
+      "site": "insight"
+     },
+     "found": "10 twins of InSight's site; the closest is Bechar, Algeria at 0.888"
+    },
+    {
+     "tool": "get_checks",
+     "args": {
+      "site": "insight"
+     },
+     "found": "split-years agreement 0.67, 10 of 10 twins above the shuffled baseline, rover agreement 0.942"
+    },
+    {
+     "tool": "show",
+     "args": {
+      "rank": 4,
+      "site": "insight"
+     },
+     "found": "Khairpur, Sindh, Pakistan"
+    }
+   ],
+   "action": {
+    "site": "insight",
+    "rank": 4
+   },
+   "checked": 2,
+   "unverified": []
+  },
+  {
+   "question": "Which Earth site best rehearses Opportunity's dust year, and how far can I trust that match?",
+   "text": "The best Earth twin for Opportunity is Vihari, Punjab, Pakistan, with candidate test months in April, May, June, and July. Its match score is 0.883, which comfortably exceeds the shuffled baseline 99th percentile of 0.732. However, the split-years top-50 overlap is only 0.3, and Vihari does not share the same dust regime as Opportunity, while Mars surface pressure is under 1% of Earth's, fundamentally altering how wind lifts and settles dust.",
+   "steps": [
+    {
+     "tool": "get_twins",
+     "args": {
+      "site": "opportunity"
+     },
+     "found": "10 twins of Opportunity's site; the closest is Vihari, Punjab, Pakistan at 0.883"
+    },
+    {
+     "tool": "get_checks",
+     "args": {
+      "site": "opportunity"
+     },
+     "found": "split-years agreement 0.619, 10 of 10 twins above the shuffled baseline, rover agreement 0.786"
+    },
+    {
+     "tool": "show",
+     "args": {
+      "rank": 1,
+      "site": "opportunity"
+     },
+     "found": "Vihari, Punjab, Pakistan"
+    }
+   ],
+   "action": {
+    "site": "opportunity",
+    "rank": 1
+   },
+   "checked": 6,
+   "unverified": []
+  },
+  {
+   "question": "I can only run a field test in January or February. Which twin of Spirit's site fits those months?",
+   "text": "For Spirit's site, the best-ranked twin covering January and February is Auna, Niger, Nigeria, ranked 5 with recommended test months Jan, Feb, Mar and Apr. Its match score is 0.862, which exceeds the shuffled baseline 99th percentile of 0.737. However, split-years rank agreement for this site is only 0.556, and Mars surface pressure is under 1% of Earth's, meaning wind lifts and drops dust differently than on Mars.",
+   "steps": [
+    {
+     "tool": "get_twins",
+     "args": {
+      "site": "spirit"
+     },
+     "found": "10 twins of Spirit's site; the closest is Diplo, Sindh, Pakistan at 0.884"
+    },
+    {
+     "tool": "get_checks",
+     "args": {
+      "site": "spirit"
+     },
+     "found": "split-years agreement 0.556, 10 of 10 twins above the shuffled baseline, rover agreement 0.966"
+    },
+    {
+     "tool": "show",
+     "args": {
+      "rank": 5,
+      "month": 1,
+      "site": "spirit"
+     },
+     "found": "Auna, Niger, Nigeria, Jan"
+    }
+   ],
+   "action": {
+    "site": "spirit",
+    "rank": 5,
+    "month": 1
+   },
+   "checked": 6,
+   "unverified": []
+  }
+ ]
+}
