@@ -86,17 +86,17 @@ export default function Story(props: {
     <div className={`fixed inset-0 z-20 flex flex-col ${dim}`} role="dialog" aria-label="Story mode">
       <div className="flex min-h-0 flex-1 items-center justify-center p-4 md:p-6">
         {step === 0 && (
-          <figure className="max-w-3xl overflow-hidden">
+          <figure className="w-[min(1040px,92vw)] overflow-hidden">
             <div className="overflow-hidden rounded-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/tex/insight_selfie.jpg" alt="InSight's final selfie, its solar panels covered in red dust" className="kenburns w-full" />
+              <img src="/tex/insight_selfie.jpg" alt="InSight's final selfie, its solar panels covered in red dust" className="kenburns max-h-[60vh] w-full object-cover" />
             </div>
             <figcaption className="mt-2 text-[12px] text-mute">InSight&apos;s final selfie, 24 April 2022 · NASA/JPL-Caltech</figcaption>
           </figure>
         )}
         {step === 1 && site && (
           <div className="flex flex-col items-center">
-            <DustRing mars={site.shape} marsYears={site.series} emphYear={year} title={`Dust ring for ${site.place}`} size={400} />
+            <DustRing mars={site.shape} marsYears={site.series} emphYear={year} title={`Dust ring for ${site.place}`} size={500} />
             <div className="pointer-events-auto mt-1 flex max-w-xl flex-wrap justify-center gap-1" role="group" aria-label="Mars year">
               {(site.mars_years ?? []).map((my, i) => (
                 <button key={my} onClick={() => setYear(year === i ? null : i)} aria-pressed={year === i}
@@ -108,7 +108,7 @@ export default function Story(props: {
         )}
         {step === 3 && site && twin && (
           <div className="flex flex-col items-center">
-            <DustRing mars={site.shape} earth={twin.shape} shift={turn} aligned title="Mars and Earth dust rings" size={380} />
+            <DustRing mars={site.shape} earth={twin.shape} shift={turn} aligned title="Mars and Earth dust rings" size={480} />
             <div className="pointer-events-auto mt-1 flex items-center gap-3">
               <button onClick={() => setTurn((k) => (k + 11) % 12)} aria-label="Turn Earth's year back one month" className="row grid h-10 w-10 place-items-center rounded-lg bg-white/[0.07] text-lg hover:bg-white/[0.12]">‹</button>
               <div className="w-56 text-center">
