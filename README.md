@@ -43,7 +43,7 @@ Two further analyses run on the same data:
 
 - Top twins: Bechar (Algeria), Yendi (Ghana), Dakhla (Western Sahara), Khairpur (Sindh, Pakistan), Ghat (Libya).
 - Best score 0.89; the best 1% of shuffled-season matches score 0.73. All ten top twins clear that line.
-- None of the ten is one of the famous analog sites the challenge asks teams to look beyond.
+- None of the ten is one of the famous analog sites the challenge asks teams to look beyond. Those sites do not keep a Mars dust year under this method: Atacama's 3 scored cells fall below the scrambled-seasons line for all five Mars sites, and Iceland, Hawaii and Antarctica have too little dust in the air, or are mostly ocean or ice at this grid size, to be scored at all (`pipeline/famous_check.py`).
 - Southern Pakistan is the top twin for Opportunity (Vihari, Punjab) and Spirit (Diplo, Sindh), with candidate test months around March to July. Neither falls in the same dust regime as its Mars site, so treat them as matches on timing more than on character.
 
 Full numbers for every site are in [`web/public/data/evidence.json`](web/public/data/evidence.json).
@@ -71,7 +71,7 @@ The top ten scores for a site sit close together (about 0.85 to 0.89). Read the 
 - **Monthly resolution.** Storminess is measured on monthly means, so short storms are smoothed out.
 - **Coarse grids.** Mars cells are 3°; Earth cells are 2.5° × 2° and subsampled, not area-averaged. Match regions, not spots.
 - **MERRA-2 is a reanalysis**, part model and part observation.
-- **Demand is unproven.** We found Mars dust hardware tested in chambers, and no field site chosen for its dust climate. We are pointing at that gap, not claiming it is filled.
+- **Demand is unproven.** The Mars dust hardware tests we found ran in lab chambers. We did not find a field site picked for its dust climate, but we did not survey every field campaign, so treat this as a lead, not a proven gap.
 
 ## Data
 

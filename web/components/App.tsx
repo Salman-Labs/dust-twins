@@ -10,7 +10,7 @@ import Guide, { pointAt } from "./Guide";
 import Hook from "./Hook";
 import { Ask, Challenge } from "./Planner";
 import type { Marker } from "./Scene";
-import { type Evidence, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
+import { type Evidence, type FamousSite, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
@@ -191,6 +191,23 @@ function Check({ ok, level, title, children }: { ok?: boolean; level?: Level; ti
   );
 }
 
+const andList = (a: string[]) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
+
+/** Where the challenge's famous analog sites land under this method (pipeline/famous_check.py). */
+function FamousCheck({ sites, site, N }: { sites: FamousSite[]; site: Site; N: (p: { children: React.ReactNode }) => React.ReactElement }) {
+  const hit = sites.filter((f) => f.above_baseline[site.id] > 0);
+  const below = sites.filter((f) => f.scored > 0 && !(f.above_baseline[site.id] > 0));
+  const unscored = sites.filter((f) => f.scored === 0);
+  return (
+    <Check ok={hit.length === 0} title="Famous analog sites">
+      The challenge asks teams to look beyond {andList(sites.map((f) => f.name))}. <N>{hit.length} of {sites.length}</N> keep {site.place}&apos;s dust year here.
+      {below.map((f) => <span key={f.name}> {f.name}&apos;s <N>{f.scored}</N> scored cells all fall below the scrambled-seasons line.</span>)}
+      {unscored.length > 0 && <> {andList(unscored.map((f) => f.name))} have too little dust in the air, or are mostly ocean or ice at this grid size, to be scored at all.</>}
+      {hit.length > 0 && <> {andList(hit.map((f) => f.name))} {hit.length === 1 ? "clears" : "clear"} the line.</>}
+    </Check>
+  );
+}
+
 /** Rover sky opacity vs the orbital record at the same cell, each scaled by its own mean (different wavelengths). */
 function RoverChart({ pairs }: { pairs: { my: number; bin: number; rover: number; orbit: number }[] }) {
   const W = 560, H = 120, P = 6;
@@ -248,6 +265,7 @@ function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site
         <Check ok={e.same_regime_in_top10 >= 5} title="Dust regimes">
           Grouping every cell on both planets by the shape of its dust year gives {ev.regimes.meta.k} regimes (cluster separation {ev.regimes.meta.silhouette[String(ev.regimes.meta.k)]}, which is loose: the regimes shade into each other). {site.place} sits in a regime that covers <N>{pct(ev.regimes.regimes[site.regime].mars_share)}</N> of Mars and only <N>{pct(ev.regimes.regimes[site.regime].earth_share)}</N> of Earth&apos;s dusty land. <N>{e.same_regime_in_top10} of 10</N> top twins fall in it
         </Check>
+        {ev.famous_sites && <FamousCheck sites={ev.famous_sites} site={site} N={N} />}
         {e.rover && (
           <Check ok={e.rover.r >= 0.7} title="Rover ground truth">
             {site.name} measured the dust in its own sky. Across <N>{e.rover.n}</N> month-sized stretches, its readings and the orbital record at this cell correlate at <N>{e.rover.r}</N>. Each line is scaled to its own average because the two instruments see different wavelengths

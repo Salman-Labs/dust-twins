@@ -71,6 +71,10 @@ export default function Story(props: {
   const match = useMemo(() => (site && twin ? ringMatch(site.shape, twin.shape, turn) : 0), [site, twin, turn]);
   const locked = !!twin && turn === twin.shift;
   const e = ev && site ? ev.sites[site.id] : null;
+  const famous = ev?.famous_sites && site ? ev.famous_sites : null;
+  const famousStat = famous
+    ? [`${famous.filter((f) => f.above_baseline[site!.id] > 0).length}/${famous.length}`, "famous analog sites keep this dust year"]
+    : [`${10 - (e?.famous_in_top10 ?? 0)}/10`, "are not famous analog sites"];
 
   const captions: [string, string][] = [
     ["December 2022", "NASA's InSight lander falls silent on Mars. Not broken. Buried: four years of dust on its solar panels."],
@@ -122,7 +126,7 @@ export default function Story(props: {
         )}
         {step === 4 && e && (
           <div className="surface pointer-events-auto grid grid-cols-3 gap-8 rounded-2xl border border-line px-8 py-6 text-center">
-            {[[`${e.shuffle.top10_above_null}/10`, "top twins beat scrambled seasons"], [e.rover ? e.rover.r.toFixed(2) : "–", "rover vs orbit agreement"], [`${10 - e.famous_in_top10}/10`, "are not famous analog sites"]].map(([n, l]) => (
+            {[[`${e.shuffle.top10_above_null}/10`, "top twins beat scrambled seasons"], [e.rover ? e.rover.r.toFixed(2) : "–", "rover vs orbit agreement"], famousStat].map(([n, l]) => (
               <div key={l}><p className="num text-[32px] leading-none text-ink">{n}</p><p className="mx-auto mt-2 max-w-[9rem] text-[12px] leading-4 text-dim">{l}</p></div>
             ))}
           </div>

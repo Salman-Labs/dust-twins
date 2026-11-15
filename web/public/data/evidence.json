@@ -1599,5 +1599,55 @@
   "earth_grid": "2.5 x 2 deg (subsampled)",
   "mars_grid": "3 x 3 deg",
   "mars_variable": "cdodtot (column dust optical depth above the local surface)"
- }
+ },
+ "famous_sites": [
+  {
+   "name": "Atacama",
+   "cells": 12,
+   "scored": 3,
+   "above_baseline": {
+    "insight": 0,
+    "opportunity": 0,
+    "spirit": 0,
+    "perseverance": 0,
+    "curiosity": 0
+   }
+  },
+  {
+   "name": "Iceland",
+   "cells": 15,
+   "scored": 0,
+   "above_baseline": {
+    "insight": 0,
+    "opportunity": 0,
+    "spirit": 0,
+    "perseverance": 0,
+    "curiosity": 0
+   }
+  },
+  {
+   "name": "Hawaii",
+   "cells": 9,
+   "scored": 0,
+   "above_baseline": {
+    "insight": 0,
+    "opportunity": 0,
+    "spirit": 0,
+    "perseverance": 0,
+    "curiosity": 0
+   }
+  },
+  {
+   "name": "Antarctica",
+   "cells": 2304,
+   "scored": 0,
+   "above_baseline": {
+    "insight": 0,
+    "opportunity": 0,
+    "spirit": 0,
+    "perseverance": 0,
+    "curiosity": 0
+   }
+  }
+ ]
 }

@@ -24,8 +24,10 @@ export type SiteEvidence = {
 };
 export type Regime = { id: number; name: string; where: string; rgb: [number, number, number]; curve: number[]; mars_share: number; earth_share: number; mars_cells: number; earth_cells: number };
 export type StormYear = { year: number; peak_share: number; z: number; flagged: boolean; flagged_z: boolean };
+/** A famous analog site's box on the Earth grid: how many cells were scored, and how many clear each Mars site's shuffle line. */
+export type FamousSite = { name: string; cells: number; scored: number; above_baseline: Record<string, number> };
 export type Evidence = {
-  sites: Record<string, SiteEvidence>; meta: Record<string, unknown>;
+  sites: Record<string, SiteEvidence>; meta: Record<string, unknown>; famous_sites?: FamousSite[];
   regimes: { meta: { k: number; silhouette: Record<string, number> }; regimes: Regime[] };
   storm_years: { mars: StormYear[]; earth: StormYear[]; known: number[]; found: number[]; hits: number[]; missed: number[]; extra: number[]; earth_flagged: number[]; first_rule_found: number[]; note: string };
 };
