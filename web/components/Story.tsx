@@ -77,7 +77,7 @@ export default function Story(props: {
     ["The rhythm of dust", `Dust over ${site?.place ?? "Elysium Planitia"} rises and falls on a yearly beat. Pick a Mars year to see it, storms and all.`],
     ["One thread", twin ? `Where on Earth does the sky keep that beat? The closest match we found: ${twin.near}, ${twin.country}.` : "Where on Earth does the sky keep that beat?"],
     ["Your turn", locked ? `Locked. Earth's year, turned ${twin!.shift} months, tracks Mars. To rehearse the dustiest stretch, the pattern says ${twin!.test_months.join(", ")}.` : "The two years are out of step. Turn Earth's year until the rings line up."],
-    ["Checked, with limits", "Every twin is tested against scrambled seasons, split years and the rovers' own readings. Thin air, low gravity and static charge can never match, and every card says so."],
+    ["Checked, with limits", "Every twin is tested against scrambled seasons and split years, and the Mars dust record is checked against the rovers' own readings. Thin air, low gravity and static charge can never match, and every card says so."],
   ];
   const [kicker, text] = captions[step];
   const dim = step === 0 || step === 1 ? "bg-black/85" : step === 3 ? "bg-black/70" : "pointer-events-none";
