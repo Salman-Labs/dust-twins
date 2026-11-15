@@ -25,6 +25,8 @@ export default function Story(props: {
 }) {
   const { step, setStep, site, twin, ev } = props;
   const [muted, setMuted] = useState(false);
+  // browsers refuse sound until the visitor has clicked on the page, e.g. when ?story=1 opens the story straight from a link
+  const [blocked, setBlocked] = useState(false);
   const [hasAudio, setHasAudio] = useState(false);
   const [year, setYear] = useState<number | null>(null);
   const [turn, setTurn] = useState(0);
@@ -41,16 +43,16 @@ export default function Story(props: {
     const a = new Audio(`/audio/story-${step + 1}.mp3`);
     audio.current = a;
     if (props.auto) a.onended = () => setTimeout(next, 500);
-    a.play().catch(() => {});
+    a.play().then(() => setBlocked(false)).catch((e) => { if (e?.name === "NotAllowedError") setBlocked(true); });
     return () => a.pause();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, hasAudio, muted]);
   useEffect(() => {
-    if (!props.auto || (hasAudio && !muted)) return;
+    if (!props.auto || (hasAudio && !muted && !blocked)) return;   // silent: the beat runs on its own clock
     const t = setTimeout(next, SECONDS[step] * 1000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, props.auto, hasAudio, muted]);
+  }, [step, props.auto, hasAudio, muted, blocked]);
   // auto mode performs the hands-on beats itself
   useEffect(() => {
     if (!props.auto || !site || !twin) return;
@@ -150,7 +152,9 @@ export default function Story(props: {
               ? <button onClick={next} className="row h-9 rounded-lg bg-ink px-3.5 font-medium text-bg hover:bg-white">Next</button>
               : <><button onClick={() => setStep(null)} className="row h-9 rounded-lg bg-ink px-3.5 font-medium text-bg hover:bg-white">Open the test card</button>
                   <button onClick={props.openEvidence} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">See the evidence</button></>}
-            {hasAudio && <button onClick={() => setMuted((m) => !m)} aria-pressed={muted} className="row ml-auto h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">{muted ? "Sound off" : "Sound on"}</button>}
+            {hasAudio && (blocked && !muted
+              ? <button onClick={() => audio.current?.play().then(() => setBlocked(false)).catch(() => {})} className="row ml-auto h-9 rounded-lg bg-white/[0.07] px-3.5 text-dust hover:bg-white/[0.12]">Play sound</button>
+              : <button onClick={() => setMuted((m) => !m)} aria-pressed={muted} className="row ml-auto h-9 rounded-lg bg-white/[0.07] px-3.5 hover:bg-white/[0.12]">{muted ? "Sound off" : "Sound on"}</button>)}
             <button onClick={() => setStep(null)} className={`${hasAudio ? "" : "ml-auto"} px-2 py-1.5 text-dim`}>Skip</button>
           </div>
         </div>

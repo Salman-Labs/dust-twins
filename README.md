@@ -1,27 +1,53 @@
-# Dust Twins
+<p align="center"><img src="docs/readme/banner.png" alt="Dust Twins: where on Earth does dust behave the way it does at a Mars landing site, and in which months? Beside the title, InSight's final selfie with its solar panels covered in dust." width="100%"></p>
 
-**Where on Earth does the sky carry dust the way it does at a Mars landing site, and in which months?**
+**Project links**
 
-**Live app: https://dust-twins.vercel.app** · story mode: https://dust-twins.vercel.app/?story=1
+- **Live app:** [dust-twins.vercel.app](https://dust-twins.vercel.app)
+- **Story mode (guided 30-second walkthrough):** [dust-twins.vercel.app/?story=1](https://dust-twins.vercel.app/?story=1)
+- **Demo video (52 s):** [watch](https://dust-twins.vercel.app/media/dust-twins-local-60s.mp4)
+- **30-second video:** [watch](https://dust-twins.vercel.app/media/dust-twins-demo-30s.mp4)
+- **Slides (7):** [view in browser](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdust-twins.vercel.app%2Fmedia%2Fdust-twins-deck.pptx) · [download .pptx](https://dust-twins.vercel.app/media/dust-twins-deck.pptx)
 
 NASA Space Apps Challenge 2026 · Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars* · Islamabad
 
+## Why it matters
+
 Dust on its solar panels ended NASA's InSight lander in 2022, and a planet-wide dust storm ended the Opportunity rover in 2018. Dust Twins compares 13 Mars years of orbital dust records with 24 years of NASA's Earth dust record and finds the places on Earth whose dust *behaves* most like each landing site's, then turns each match into a month-by-month test calendar.
 
-These are **atmospheric dust-behaviour analogues** and **candidate test windows**. They are hypotheses to check on site. They are not predictions of dust settling or of solar power loss.
+*These are **atmospheric dust-behaviour analogues** and **candidate test windows**: hypotheses to check on site, not predictions of dust settling or of solar power loss.*
 
-## What the app does
+## What we found
 
-- **Pick a Mars site** (InSight, Opportunity, Spirit, Perseverance, Curiosity). Earth lights up with its twin map and ten best regions.
-- **Dust Ring.** One year of dust drawn as a ring. Two rings overlaid show a match; turning the Earth ring shows the season shift.
-- **Test Card and Test Calendar.** For each twin: which Earth months line up with which Mars season, how well, what matches, and what can never match.
-- **Dust regimes.** A second map layer: every cell on both planets grouped by the shape of its dust year.
-- **Evidence.** Seven method checks, published whichever way they came out.
-- **Argue against this twin.** An SI model reads one twin's figures and gives the strongest reasons the match could fail.
-- **Ask a planning question.** An SI model looks the answer up in the app's data, points the globes at it and states a caveat.
-- **Story mode.** The InSight story in five beats, two of them hands-on. Add `?story=1` to the URL.
+<p align="center"><img src="docs/readme/found.png" alt="Left: the app's list of InSight's Earth twins (Bechar, Algeria 0.89, May to Aug; Yendi, Ghana 0.89; Dakhla, Western Sahara 0.88; Khairpur, Pakistan 0.88; Ghat, Libya 0.87). Right: the closest Earth twin for each landing site: InSight to Bechar 0.89, Opportunity to Vihari 0.88, Spirit to Diplo 0.88, Perseverance to Ndele 0.91, Curiosity to Jambusar 0.89." width="100%"></p>
 
-## Method
+All ten top twins beat the shuffled-seasons baseline at every site. Perseverance and Curiosity are nuclear powered and are included for comparison.
+
+**InSight in detail.** Its top twins are Bechar (Algeria), Yendi (Ghana), Dakhla (Western Sahara), Khairpur (Sindh, Pakistan) and Ghat (Libya). Best score 0.89; the best 1% of shuffled-season matches score 0.73.
+
+- None of the ten is one of the famous analog sites the challenge asks teams to look beyond. Those sites do not keep a Mars dust year under this method: Atacama's 3 scored cells fall below the scrambled-seasons line for all five Mars sites, and Iceland, Hawaii and Antarctica have too little dust in the air, or are mostly ocean or ice at this grid size, to be scored at all (`pipeline/famous_check.py`).
+- Southern Pakistan is the top twin for Opportunity (Vihari, Punjab) and Spirit (Diplo, Sindh), with candidate test months around March to July. Neither falls in the same dust regime as its Mars site, so treat them as matches on timing more than on character.
+- Spirit (Gusev crater) and Perseverance (Jezero crater) share 7 of their 10 twins. Their dust years look alike in the orbital record, so at this resolution the method does not tell those two sites apart.
+
+Full numbers for every site are in [`web/public/data/evidence.json`](web/public/data/evidence.json).
+
+## Built on NASA data
+
+<p align="center"><img src="docs/readme/data.png" alt="Built on NASA open data. The app's two globes: InSight's site on Mars joined by a dashed arc to its Earth twin in Algeria. Mars: 13 Mars years of dust maps from NASA orbiters (TES, THEMIS, MCS), 7,200 cells. Earth: 24 years of NASA MERRA-2 dust, 2,230 dusty land cells, plus surface wind and land fraction. Ground truth: InSight r 0.94, Opportunity r 0.79, Spirit r 0.97." width="100%"></p>
+
+| Data | Source | Use |
+| --- | --- | --- |
+| Mars column dust optical depth, Mars Years 24 to 36 | [Montabone et al. dust climatology](http://www-mars.lmd.jussieu.fr/mars/dust_climatology/index.html), LMD (built from NASA TES, THEMIS and MCS). CC BY-SA 3.0 | Mars fingerprints |
+| MERRA-2 dust optical depth ([`M2TMNXAER`](https://disc.gsfc.nasa.gov/datasets/M2TMNXAER_5.12.4/summary), `DUEXTTAU`), 1999 to 2022 | NASA GES DISC | Earth fingerprints |
+| MERRA-2 surface wind speed ([`M2TMNXFLX`](https://disc.gsfc.nasa.gov/datasets/M2TMNXFLX_5.12.4/summary)), land fraction ([`M2C0NXASM`](https://disc.gsfc.nasa.gov/datasets/M2C0NXASM_5.12.4/summary)) | NASA GES DISC | Wind tag, land mask |
+| Rover atmospheric opacity: Opportunity and Spirit Pancam, InSight | [NASA PDS Geosciences Node](https://pds-geosciences.wustl.edu/); Lemmon et al. (Mendeley Data, CC BY 4.0) | Ground truth |
+| Earth imagery; InSight's first and final selfies ([PIA22876](https://photojournal.jpl.nasa.gov/catalog/PIA22876), [PIA25287](https://photojournal.jpl.nasa.gov/catalog/PIA25287)) | [NASA Earth Observatory](https://earthobservatory.nasa.gov/features/BlueMarble); NASA/JPL-Caltech | Globe texture, opening, story |
+| Mars texture | Solar System Scope, CC BY 4.0 | Globe texture |
+
+Cite: Montabone et al. (2015), *Icarus* 251, 65-95; Montabone et al. (2020), *JGR Planets*, doi:10.1029/2019JE006111.
+
+## How it works
+
+<p align="center"><img src="docs/readme/how.png" alt="Three steps in the app's style. 1, fingerprint every place: InSight's dust year drawn as a ring. 2, turn Earth's year to fit: Bechar's ring turned 2 months onto InSight's. 3, read off the test window: the month bar, with May to August lit." width="100%"></p>
 
 Every cell on both planets gets the same four-number fingerprint, on 12 bins per year (Earth calendar months; Mars 30° bins of solar longitude):
 
@@ -39,15 +65,19 @@ Two further analyses run on the same data:
 - **Dust regimes (unsupervised).** k-means on a shift-invariant description of each cell's dust year (the size of its first five seasonal harmonics, plus storminess and swing), with Mars and Earth cells in one space. The number of regimes is the fewest whose silhouette is within 0.03 of the best (5; silhouette 0.31, so the regimes shade into each other).
 - **Storm-year detector.** For each year, the largest share of the planet sitting above twice its own median for that time of year. Years are flagged when they sit above the widest gap in those shares and that gap is wider than the spread of the years below it.
 
-## Results (InSight, Elysium Planitia)
+## The app
 
-- Top twins: Bechar (Algeria), Yendi (Ghana), Dakhla (Western Sahara), Khairpur (Sindh, Pakistan), Ghat (Libya).
-- Best score 0.89; the best 1% of shuffled-season matches score 0.73. All ten top twins clear that line.
-- None of the ten is one of the famous analog sites the challenge asks teams to look beyond. Those sites do not keep a Mars dust year under this method: Atacama's 3 scored cells fall below the scrambled-seasons line for all five Mars sites, and Iceland, Hawaii and Antarctica have too little dust in the air, or are mostly ocean or ice at this grid size, to be scored at all (`pipeline/famous_check.py`).
-- Southern Pakistan is the top twin for Opportunity (Vihari, Punjab) and Spirit (Diplo, Sindh), with candidate test months around March to July. Neither falls in the same dust regime as its Mars site, so treat them as matches on timing more than on character.
-- Spirit (Gusev crater) and Perseverance (Jezero crater) share 7 of their 10 twins. Their dust years look alike in the orbital record, so at this resolution the method does not tell those two sites apart.
+<p align="center"><img src="docs/readme/app.png" alt="The Dust Twins app in a browser: landing sites on the left, the Mars and Earth globes joined by a dashed arc in the middle, a month bar below, and on the right the story button, a planning question box and InSight's ranked Earth twins." width="100%"></p>
 
-Full numbers for every site are in [`web/public/data/evidence.json`](web/public/data/evidence.json).
+- **Pick a Mars site** (InSight, Opportunity, Spirit, Perseverance, Curiosity). Earth lights up with its twin map and ten best regions.
+- **Dust Ring.** One year of dust drawn as a ring. Two rings overlaid show a match; turning the Earth ring shows the season shift.
+- **Test Card and Test Calendar.** For each twin: which Earth months line up with which Mars season, how well, what matches, and what can never match.
+- **Dust regimes.** A second map layer: every cell on both planets grouped by the shape of its dust year.
+- **Evidence.** Seven method checks, published whichever way they came out.
+- **Argue against this twin.** An SI model reads one twin's figures and gives the strongest reasons the match could fail.
+- **Ask a planning question.** An SI model looks the answer up in the app's data, points the globes at it and states a caveat.
+- **Story mode.** The InSight story in five beats, two of them hands-on. Add `?story=1` to the URL.
+
 
 ## Evidence, including what is weak
 
@@ -75,23 +105,6 @@ The top ten scores for a site sit close together (about 0.85 to 0.89). Read the 
 - **MERRA-2 is a reanalysis**, part model and part observation.
 - **Demand is unproven.** The Mars dust hardware tests we found ran in lab chambers. We did not find a field site picked for its dust climate, but we did not survey every field campaign, so treat this as a lead, not a proven gap.
 
-## Data
-
-| Data | Source | Use |
-| --- | --- | --- |
-| Mars column dust optical depth, Mars Years 24 to 36 | Montabone et al. dust climatology, LMD (built from NASA TES, THEMIS and MCS). CC BY-SA 3.0 | Mars fingerprints |
-| MERRA-2 dust optical depth (`M2TMNXAER`, `DUEXTTAU`), 1999 to 2022 | NASA GES DISC | Earth fingerprints |
-| MERRA-2 surface wind speed (`M2TMNXFLX`), land fraction (`M2C0NXASM`) | NASA GES DISC | Wind tag, land mask |
-| Rover atmospheric opacity: Opportunity and Spirit Pancam, InSight | NASA PDS Geosciences Node; Lemmon et al. (Mendeley Data, CC BY 4.0) | Ground truth |
-| Earth imagery, InSight final selfie (PIA25287) | NASA Earth Observatory; NASA/JPL-Caltech | Globe texture, story |
-| Mars texture | Solar System Scope, CC BY 4.0 | Globe texture |
-
-Cite: Montabone et al. (2015), *Icarus* 251, 65-95; Montabone et al. (2020), *JGR Planets*, doi:10.1029/2019JE006111.
-
-## Related work
-
-[OwenSolis03/Space_Apps_2026_Analogos_Luna_Marte](https://github.com/OwenSolis03/Space_Apps_2026_Analogos_Luna_Marte) also uses the Montabone climatology, as one of seven dimensions in a general analog matcher. Dust Twins looks only at dust and goes further on that one process: storminess, year-to-year swing, wind, rover ground truth and a test calendar.
-
 ## Use of Super Intelligence (SI)
 
 SI tools (Claude) were used for background research, for proposing and writing the pipeline and web code, including the regime clustering, the storm-year detector and the two in-app SI features, and for drafting this README. Files written with SI assistance say so in their header comments. All numbers in the app come from the pipeline run on the data above; none were generated by an SI tool. No SI-generated images are used.
@@ -102,15 +115,44 @@ The story-mode narration (`web/public/audio/story-*.mp3`) is SI-generated speech
 
 ## Run it
 
+### The app
+
+The pipeline's output is already in the repository (`web/public/data/`), so the app runs without downloading any NASA data.
+
+Needs Node.js 20.9 or newer and pnpm (`npm install -g pnpm`).
+
+```bash
+cd web
+pnpm install
+pnpm dev                      # open http://localhost:3000
+pnpm build && pnpm start      # production build
+```
+
+Optional: the two SI features (*Argue against this twin*, *Ask a planning question*) call Google Gemini. Put a key in `web/.env.local`:
+
+```bash
+GOOGLE_GENERATIVE_AI_API_KEY=your-key
+```
+
+Without a key, both features show a saved example run, and a visitor can paste their own key in the app.
+
+### Rebuild the data from NASA sources
+
+Needs Python 3 and a free NASA Earthdata login in `~/.netrc` (https://urs.earthdata.nasa.gov).
+
 ```bash
 python3 -m venv .venv && .venv/bin/pip install earthaccess xarray netCDF4 numpy scipy pillow reverse_geocoder pycountry
-.venv/bin/python pipeline/earth_fetch.py        # needs a free NASA Earthdata login
-.venv/bin/python pipeline/earth_fetch.py wind
-# download the 13 dustscenario_MY*.nc files and the three rover tables into data/raw/ (URLs in pipeline/build.py docstring and above)
+.venv/bin/python pipeline/earth_fetch.py        # MERRA-2 monthly dust, 1999-2022
+.venv/bin/python pipeline/earth_fetch.py wind   # MERRA-2 monthly surface wind, 2010-2019
+# download the 13 dustscenario_MY*.nc files and the three rover tables into data/raw/ (URLs in pipeline/build.py docstring and the Data section above)
 .venv/bin/python pipeline/build.py              # writes web/public/data/
 .venv/bin/python pipeline/famous_check.py       # adds where the famous analog sites land to evidence.json
-cd web && pnpm install && pnpm dev
 ```
+
+### Narration, videos and slides (optional)
+
+- `pipeline/narrate.py` and `pipeline/narrate_take.py` regenerate the narration with ElevenLabs. They read `ELEVENLABS_API_KEY` from `web/.env.local`.
+- `video/demo.mjs` and `video/demo60.mjs` record the demo videos from a running app with Playwright and ffmpeg. `deck/build.js` builds the slides with pptxgenjs. Each script sets `ROOT` to the author's folder at the top; change it to your clone first.
 
 ## Licence
 
