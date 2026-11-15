@@ -37,6 +37,53 @@ function Section({ title, aside, guide, children }: { title: string; aside?: Rea
   );
 }
 
+/**
+ * The desktop side panels scroll on their own, and most of the right one sits below the fold.
+ * "Up next": a slim bar pinned to the panel's bottom names the next section out of view and how many
+ * more follow; a click brings that section up under the panel header. It goes at the end of the panel.
+ */
+function ScrollHint({ panel }: { panel: React.RefObject<HTMLElement | null> }) {
+  const [next, setNext] = useState<{ title: string; left: number } | null>(null);
+  const below = useRef<HTMLElement[]>([]);
+  useEffect(() => {
+    const el = panel.current;
+    if (!el) return;
+    const check = () => {
+      const bottom = el.getBoundingClientRect().bottom - 44;   // the bar's own height
+      below.current = [...el.querySelectorAll<HTMLElement>(":scope section")].filter((s) => s.getBoundingClientRect().top > bottom - 8);
+      const first = below.current[0];
+      const title = first?.querySelector("h3")?.textContent?.trim();
+      setNext((n) => (title ? (n?.title === title && n.left === below.current.length ? n : { title, left: below.current.length }) : null));
+    };
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    const ro = new ResizeObserver(check);   // the panel resizes with the window
+    ro.observe(el);
+    const mo = new MutationObserver(check); // its content changes when a site or twin loads
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
+    return () => { el.removeEventListener("scroll", check); ro.disconnect(); mo.disconnect(); };
+  }, [panel]);
+  if (!next) return null;
+  const go = () => {
+    const el = panel.current, s = below.current[0];
+    if (!el || !s) return;
+    const header = el.querySelector<HTMLElement>(":scope > .sticky")?.offsetHeight ?? 0;
+    el.scrollTo({ top: el.scrollTop + s.getBoundingClientRect().top - el.getBoundingClientRect().top - header, behavior: "smooth" });
+    s.classList.add("guide-flash");
+    setTimeout(() => s.classList.remove("guide-flash"), 2600);
+  };
+  return (
+    <button onClick={go} aria-label={`Scroll to ${next.title}`}
+      className="row surface sticky bottom-0 z-20 flex h-11 w-full items-center gap-2.5 border-t border-line px-5 text-left text-[13px] hover:bg-white/[0.035] max-md:hidden">
+      <span aria-hidden className="pointer-events-none absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-surface to-transparent" />
+      <span aria-hidden className="nudge num text-[16px] leading-none text-dust">↓</span>
+      <span className="text-mute">Next</span>
+      <span className="min-w-0 truncate text-ink">{next.title}</span>
+      {next.left > 1 && <span className="ml-auto shrink-0 text-[12px] text-mute">{next.left - 1} more</span>}
+    </button>
+  );
+}
+
 /** A value with a thin track under it. */
 function Meter({ label, value, v, color = "var(--ink)" }: { label: string; value: string; v: number; color?: string }) {
   return (
@@ -301,6 +348,7 @@ export default function App() {
   const [guide, setGuide] = useState(false);
   const [hook, setHook] = useState(false);
   const pending = useRef<number | null>(null);
+  const marsPanel = useRef<HTMLElement>(null), earthPanel = useRef<HTMLElement>(null);
   const [story, setStory] = useState<number | null>(null);
   const [auto, setAuto] = useState(false);
 
@@ -354,7 +402,7 @@ export default function App() {
   return (
     <main className="relative w-full md:grid md:h-dvh md:grid-cols-[300px_1fr_380px] md:overflow-hidden">
       {/* Mars sidebar */}
-      <aside className="surface scroll z-10 md:overflow-y-auto md:border-r md:border-line max-md:hidden" aria-label="Mars landing site">
+      <aside ref={marsPanel} className="surface scroll z-10 md:overflow-y-auto md:border-r md:border-line max-md:hidden" aria-label="Mars landing site">
         <div className="surface sticky top-0 z-20 border-b border-line px-5 pb-5 pt-6">
           <h1 className="flex items-center gap-2.5 text-[22px] font-semibold leading-none">
             <svg width="26" height="20" viewBox="10 14 44 36" aria-hidden><circle cx="27" cy="32" r="15" fill="none" stroke="var(--mars)" strokeWidth="4" /><circle cx="37" cy="32" r="15" fill="none" stroke="var(--earth)" strokeWidth="4" /></svg>
@@ -397,6 +445,7 @@ export default function App() {
             </Section>
           </>
         )}
+        <ScrollHint panel={marsPanel} />
       </aside>
 
       {/* scene */}
@@ -431,7 +480,7 @@ export default function App() {
       </div>
 
       {/* Earth sidebar */}
-      <aside className="surface scroll z-10 md:overflow-y-auto md:border-l md:border-line" aria-label="Earth twins">
+      <aside ref={earthPanel} className="surface scroll z-10 md:overflow-y-auto md:border-l md:border-line" aria-label="Earth twins">
         <div className="surface sticky top-0 z-20 border-b border-line px-5 py-4 max-md:hidden">
           {actions}
           {site && twin && (
@@ -513,6 +562,7 @@ export default function App() {
           </>
         )}
         <p className="border-t border-line px-5 py-5 text-[11px] leading-4 text-mute md:hidden">Mars dust: Montabone et al. (CC BY-SA 3.0). Earth dust: NASA MERRA-2. Imagery: NASA, Solar System Scope (CC BY 4.0). Story narration is SI-generated speech (ElevenLabs)</p>
+        <ScrollHint panel={earthPanel} />
       </aside>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}

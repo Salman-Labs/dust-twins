@@ -87,3 +87,9 @@ section[data-guide] { scroll-margin-top: 120px; }
 .hook-first { z-index: 1; animation: hookzoom 12s ease-out both, hookfade 1.6s ease-in-out 1.2s both; }
 .hook-in { animation: hookin 700ms ease-out both; }
 @media (prefers-reduced-motion: reduce) { .hook-img, .hook-in { animation: none; } .hook-first { animation: none; opacity: 0; } }
+
+/* "Up next" bar: the arrow bobs to say there is more below; it rests while hovered */
+@keyframes nudge { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(5px); } }
+.nudge { display: inline-block; animation: nudge 1.4s ease-in-out infinite; }
+button:hover > .nudge { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .nudge { animation: none; } }
