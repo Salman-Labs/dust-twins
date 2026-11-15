@@ -11,3 +11,5 @@ video/out/
 video/node_modules/
 media/audio-*/
 PLAN.md
+media/*.pptx
+media/~*
