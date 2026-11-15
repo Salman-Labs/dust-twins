@@ -116,7 +116,7 @@ function TwinList({ file, ti, setTi }: { file: TwinFile; ti: number | null; setT
       </ol>
       <div className="mt-3 flex items-center justify-between px-3 text-[12px] text-mute">
         <span>Line length: match above the shuffled baseline</span>
-        <button onClick={() => setAll((a) => !a)} className="text-dim underline decoration-line underline-offset-4 hover:text-ink">{all ? "Top 5" : `All ${file.twins.length}`}</button>
+        <button onClick={() => setAll((a) => !a)} className="-my-3 -mr-2 inline-flex min-h-11 items-center px-2 text-dim underline decoration-line underline-offset-4 hover:text-ink">{all ? "Top 5" : `All ${file.twins.length}`}</button>
       </div>
     </>
   );
@@ -488,7 +488,7 @@ export default function App() {
               <Challenge site={site.id} rank={(ti ?? 0) + 1} twinName={twin.near} />
             </Section>
 
-            <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
+            <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="-my-3 -mr-2 inline-flex min-h-11 items-center px-2 text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
               <div className="-mx-2 flex justify-center">
                 <DustRing mars={site.shape} earth={twin.shape} shift={twin.shift} aligned={aligned} highlight={month} size={280}
                   title={`Dust rings for ${site.place} (Mars) and ${twin.place} (Earth)`} />
