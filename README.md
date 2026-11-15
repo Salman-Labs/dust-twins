@@ -4,6 +4,8 @@
 
 **Live app: https://dust-twins.vercel.app** · story mode: https://dust-twins.vercel.app/?story=1
 
+**Demo video (52 s):** https://dust-twins.vercel.app/media/dust-twins-local-60s.mp4 · **30-second video:** https://dust-twins.vercel.app/media/dust-twins-demo-30s.mp4 · **Slides (7):** [view in browser](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdust-twins.vercel.app%2Fmedia%2Fdust-twins-deck.pptx) or [download .pptx](https://dust-twins.vercel.app/media/dust-twins-deck.pptx)
+
 NASA Space Apps Challenge 2026 · Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars* · Islamabad
 
 Dust on its solar panels ended NASA's InSight lander in 2022, and a planet-wide dust storm ended the Opportunity rover in 2018. Dust Twins compares 13 Mars years of orbital dust records with 24 years of NASA's Earth dust record and finds the places on Earth whose dust *behaves* most like each landing site's, then turns each match into a month-by-month test calendar.
@@ -102,15 +104,44 @@ The story-mode narration (`web/public/audio/story-*.mp3`) is SI-generated speech
 
 ## Run it
 
+### The app
+
+The pipeline's output is already in the repository (`web/public/data/`), so the app runs without downloading any NASA data.
+
+Needs Node.js 20.9 or newer and pnpm (`npm install -g pnpm`).
+
+```bash
+cd web
+pnpm install
+pnpm dev                      # open http://localhost:3000
+pnpm build && pnpm start      # production build
+```
+
+Optional: the two SI features (*Argue against this twin*, *Ask a planning question*) call Google Gemini. Put a key in `web/.env.local`:
+
+```bash
+GOOGLE_GENERATIVE_AI_API_KEY=your-key
+```
+
+Without a key, both features show a saved example run, and a visitor can paste their own key in the app.
+
+### Rebuild the data from NASA sources
+
+Needs Python 3 and a free NASA Earthdata login in `~/.netrc` (https://urs.earthdata.nasa.gov).
+
 ```bash
 python3 -m venv .venv && .venv/bin/pip install earthaccess xarray netCDF4 numpy scipy pillow reverse_geocoder pycountry
-.venv/bin/python pipeline/earth_fetch.py        # needs a free NASA Earthdata login
-.venv/bin/python pipeline/earth_fetch.py wind
-# download the 13 dustscenario_MY*.nc files and the three rover tables into data/raw/ (URLs in pipeline/build.py docstring and above)
+.venv/bin/python pipeline/earth_fetch.py        # MERRA-2 monthly dust, 1999-2022
+.venv/bin/python pipeline/earth_fetch.py wind   # MERRA-2 monthly surface wind, 2010-2019
+# download the 13 dustscenario_MY*.nc files and the three rover tables into data/raw/ (URLs in pipeline/build.py docstring and the Data section above)
 .venv/bin/python pipeline/build.py              # writes web/public/data/
 .venv/bin/python pipeline/famous_check.py       # adds where the famous analog sites land to evidence.json
-cd web && pnpm install && pnpm dev
 ```
+
+### Narration, videos and slides (optional)
+
+- `pipeline/narrate.py` and `pipeline/narrate_take.py` regenerate the narration with ElevenLabs. They read `ELEVENLABS_API_KEY` from `web/.env.local`.
+- `video/demo.mjs` and `video/demo60.mjs` record the demo videos from a running app with Playwright and ffmpeg. `deck/build.js` builds the slides with pptxgenjs. Each script sets `ROOT` to the author's folder at the top; change it to your clone first.
 
 ## Licence
 
