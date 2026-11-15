@@ -154,10 +154,6 @@ python3 -m venv .venv && .venv/bin/pip install earthaccess xarray netCDF4 numpy 
 - `pipeline/narrate.py` and `pipeline/narrate_take.py` regenerate the narration with ElevenLabs. They read `ELEVENLABS_API_KEY` from `web/.env.local`.
 - `video/demo.mjs` and `video/demo60.mjs` record the demo videos from a running app with Playwright and ffmpeg. `deck/build.js` builds the slides with pptxgenjs. Each script sets `ROOT` to the author's folder at the top; change it to your clone first.
 
-## Related work
-
-[OwenSolis03/Space_Apps_2026_Analogos_Luna_Marte](https://github.com/OwenSolis03/Space_Apps_2026_Analogos_Luna_Marte) also uses the Montabone climatology, as one of seven dimensions in a general analog matcher. Dust Twins looks only at dust and goes further on that one process: storminess, year-to-year swing, wind, rover ground truth and a test calendar.
-
 ## Licence
 
 Code: MIT. Derived data in `web/public/data/`: CC BY-SA 3.0, as required by the Mars dust climatology.
