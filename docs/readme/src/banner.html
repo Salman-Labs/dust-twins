@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- README banner, rendered to docs/readme/banner.png by docs/readme/src/render.cjs. Same tokens and fonts as web/app/globals.css. -->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@87.5,400;87.5,500&family=Schibsted+Grotesk:wght@400;500;600&display=block">
+<style>
+  :root { --bg:#0b0a09; --ink:#efe9df; --dim:#a8a196; --mute:#7a746a; --mars:#d9694a; --earth:#8db8cc; --dust:#e6c07a; }
+  html,body { margin:0; position:relative; width:1280px; height:440px; background:var(--bg); overflow:hidden; font-family:"Schibsted Grotesk",system-ui,sans-serif; color:var(--ink); }
+  .img { position:absolute; right:0; top:0; width:760px; height:440px; background:url(insight_selfie.jpg) 55% 40%/cover; }
+  .fade { position:absolute; inset:0; background:linear-gradient(90deg, var(--bg) 38%, rgba(11,10,9,.82) 52%, rgba(11,10,9,.25) 72%, rgba(11,10,9,.05)); }
+  .fade2 { position:absolute; inset:0; background:linear-gradient(0deg, rgba(11,10,9,.85), rgba(11,10,9,0) 30%); }
+  .txt { position:absolute; left:64px; top:0; bottom:0; width:640px; display:flex; flex-direction:column; justify-content:center; }
+  .logo { display:flex; align-items:center; gap:14px; }
+  .eyebrow { font-family:"Martian Mono",monospace; font-stretch:87.5%; font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--dust); }
+  h1 { margin:18px 0 0; font-size:84px; line-height:.95; font-weight:600; letter-spacing:-.03em; }
+  p { margin:20px 0 0; font-size:24px; line-height:1.35; color:var(--dim); max-width:560px; }
+  p b { color:var(--ink); font-weight:500; }
+  .credit { position:absolute; right:24px; bottom:18px; font-size:12px; color:var(--mute); }
+</style></head>
+<body>
+  <div class="img"></div><div class="fade"></div><div class="fade2"></div>
+  <div class="txt">
+    <div class="logo">
+      <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="27" cy="32" r="15" fill="none" stroke="#d9694a" stroke-width="5"/>
+        <circle cx="37" cy="32" r="15" fill="none" stroke="#8db8cc" stroke-width="5"/>
+        <circle cx="32" cy="20.5" r="3.2" fill="#e6c07a"/>
+      </svg>
+      <span class="eyebrow">NASA Space Apps 2026 · Earth analogs for Mars</span>
+    </div>
+    <h1>Dust Twins</h1>
+    <p>Where on Earth does dust behave the way it does at a Mars landing site, <b>and in which months?</b></p>
+  </div>
+  <div class="credit">InSight's final selfie, April 2022 · NASA/JPL-Caltech</div>
+</body></html>
