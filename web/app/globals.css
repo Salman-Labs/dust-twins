@@ -79,14 +79,10 @@ section[data-guide] { transition: background-color 500ms ease-out, box-shadow 50
 /* jumps land below the pinned sidebar header */
 section[data-guide] { scroll-margin-top: 120px; }
 
-/* first-visit hook: clean selfie dissolves into the buried one, then the words arrive */
-@keyframes hookfade { from { opacity: 1; } to { opacity: 0; } }
-@keyframes hookzoom { from { transform: scale(1.04); } to { transform: scale(1.12); } }
+/* first-visit opening: the card and its parts rise in, one after another */
 @keyframes hookin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.hook-img { animation: hookzoom 12s ease-out both; }
-.hook-first { z-index: 1; animation: hookzoom 12s ease-out both, hookfade 1.6s ease-in-out 1.2s both; }
 .hook-in { animation: hookin 700ms ease-out both; }
-@media (prefers-reduced-motion: reduce) { .hook-img, .hook-in { animation: none; } .hook-first { animation: none; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hook-in { animation: none; } }
 
 /* "Up next" bar: the arrow bobs to say there is more below; it rests while hovered */
 @keyframes nudge { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(5px); } }
