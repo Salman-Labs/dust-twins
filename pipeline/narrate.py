@@ -13,7 +13,7 @@ SCRIPTS = {
         "Dust at its landing site rises and falls on a yearly rhythm.",
         "Dust Twins finds where Earth's sky keeps that same rhythm.",
         "Turn Earth's year until the rings lock, and you get a test calendar.",
-        "Checked against NASA's own rovers. And honest about what Earth can never copy.",
+        "Mars dust, checked against NASA's own rovers. And honest about what Earth can never copy.",
     ]),
     # 30-second product demo video
     "demo": ("media/audio-demo", "demo", [
@@ -22,7 +22,7 @@ SCRIPTS = {
         "We find where on Earth dust behaves like it does at Mars landing sites, from NASA records of both planets.",
         "Every match comes with a calendar of months to test in.",
         "A model then argues against our own result, with every number checked.",
-        "Verified against the rovers' own readings.",
+        "The Mars dust record matches the rovers' own readings.",  # mp4 sped 1.06x to fit its slot,
         "Test on Earth, before you fly.",
     ]),
 }
