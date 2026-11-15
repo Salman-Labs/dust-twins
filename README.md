@@ -14,22 +14,13 @@ NASA Space Apps Challenge 2026 · Challenge: *Identify Earth Locations that Anal
 
 Dust on its solar panels ended NASA's InSight lander in 2022, and a planet-wide dust storm ended the Opportunity rover in 2018. Dust Twins compares 13 Mars years of orbital dust records with 24 years of NASA's Earth dust record and finds the places on Earth whose dust *behaves* most like each landing site's, then turns each match into a month-by-month test calendar.
 
-> [!NOTE]
-> These are **atmospheric dust-behaviour analogues** and **candidate test windows**. They are hypotheses to check on site. They are not predictions of dust settling or of solar power loss.
+*These are **atmospheric dust-behaviour analogues** and **candidate test windows**: hypotheses to check on site, not predictions of dust settling or of solar power loss.*
 
 ## What we found
 
-| Mars site | Where | Closest Earth twin | Match | Test window |
-| --- | --- | --- | --- | --- |
-| **InSight** | Elysium Planitia | Bechar, Algeria | 0.89 | May to Aug |
-| **Opportunity** | Meridiani Planum | Vihari, Punjab, Pakistan | 0.88 | Apr to Jul |
-| **Spirit** | Gusev Crater | Diplo, Sindh, Pakistan | 0.88 | Mar to Jun |
-| Perseverance | Jezero Crater | Ndele, Central African Republic | 0.91 | Feb to May |
-| Curiosity | Gale Crater | Jambusar, Gujarat, India | 0.89 | Mar to Jun |
+<p align="center"><img src="docs/readme/found.png" alt="Left: the app's list of InSight's Earth twins (Bechar, Algeria 0.89, May to Aug; Yendi, Ghana 0.89; Dakhla, Western Sahara 0.88; Khairpur, Pakistan 0.88; Ghat, Libya 0.87). Right: the closest Earth twin for each landing site: InSight to Bechar 0.89, Opportunity to Vihari 0.88, Spirit to Diplo 0.88, Perseverance to Ndele 0.91, Curiosity to Jambusar 0.89." width="100%"></p>
 
-For every site, all ten top twins beat the scrambled-seasons baseline (0.73 to 0.76). Perseverance and Curiosity are nuclear powered and are included for comparison. Each site has ten twins in the app.
-
-<p align="center"><img src="deck/img/globes-pk.png" alt="The app's two globes: a Mars landing site linked by a dashed line to its Earth twin in Sindh, Pakistan, with the twin regions glowing on Earth." width="88%"></p>
+All ten top twins beat the shuffled-seasons baseline at every site. Perseverance and Curiosity are nuclear powered and are included for comparison.
 
 **InSight in detail.** Its top twins are Bechar (Algeria), Yendi (Ghana), Dakhla (Western Sahara), Khairpur (Sindh, Pakistan) and Ghat (Libya). Best score 0.89; the best 1% of shuffled-season matches score 0.73.
 
@@ -41,7 +32,7 @@ Full numbers for every site are in [`web/public/data/evidence.json`](web/public/
 
 ## Built on NASA data
 
-<p align="center"><img src="docs/readme/nasa-data.png" alt="Built on NASA open data: 13 Mars years of orbiter dust maps (TES, THEMIS, MCS), 24 years of NASA MERRA-2 Earth dust (1999 to 2022, 2,230 land cells), 3 missions' own sky readings as ground truth, and 2 more MERRA-2 products for wind and the land mask." width="100%"></p>
+<p align="center"><img src="docs/readme/data.png" alt="Built on NASA open data. The app's two globes: InSight's site on Mars joined by a dashed arc to its Earth twin in Algeria. Mars: 13 Mars years of dust maps from NASA orbiters (TES, THEMIS, MCS), 7,200 cells. Earth: 24 years of NASA MERRA-2 dust, 2,230 dusty land cells, plus surface wind and land fraction. Ground truth: InSight r 0.94, Opportunity r 0.79, Spirit r 0.97." width="100%"></p>
 
 | Data | Source | Use |
 | --- | --- | --- |
@@ -56,22 +47,7 @@ Cite: Montabone et al. (2015), *Icarus* 251, 65-95; Montabone et al. (2020), *JG
 
 ## How it works
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#121110", "primaryTextColor": "#efe9df", "primaryBorderColor": "#7a746a", "lineColor": "#a8a196", "fontSize": "15px"}}}%%
-flowchart LR
-  M["Mars dust maps<br/>13 Mars years, NASA orbiters"]:::mars --> F["Same four-number<br/>fingerprint for every cell"]
-  E["MERRA-2 Earth dust<br/>24 years, NASA GES DISC"]:::earth --> F
-  R["Rover sky readings<br/>Opportunity, Spirit, InSight"]:::ok -. "checks the Mars record" .-> M
-  F --> X["Match: turn Earth's year<br/>until its shape fits"]
-  X --> C["Checks: scrambled seasons,<br/>split years, famous sites"]:::dust
-  C --> A["App: twins, test calendar,<br/>evidence, SI critic"]
-  classDef mars stroke:#d9694a,stroke-width:2px
-  classDef earth stroke:#8db8cc,stroke-width:2px
-  classDef ok stroke:#9fc48d,stroke-width:2px
-  classDef dust stroke:#e6c07a,stroke-width:2px
-```
-
-<p align="center"><img src="deck/img/rings.png" alt="Two rings, one year: the Mars dust year in orange and the Earth year in blue, with the Earth ring turned three months so the seasons line up." width="46%"></p>
+<p align="center"><img src="docs/readme/how.png" alt="Three steps in the app's style. 1, fingerprint every place: InSight's dust year drawn as a ring. 2, turn Earth's year to fit: Bechar's ring turned 2 months onto InSight's. 3, read off the test window: the month bar, with May to August lit." width="100%"></p>
 
 Every cell on both planets gets the same four-number fingerprint, on 12 bins per year (Earth calendar months; Mars 30° bins of solar longitude):
 
@@ -91,6 +67,8 @@ Two further analyses run on the same data:
 
 ## The app
 
+<p align="center"><img src="docs/readme/app.png" alt="The Dust Twins app in a browser: landing sites on the left, the Mars and Earth globes joined by a dashed arc in the middle, a month bar below, and on the right the story button, a planning question box and InSight's ranked Earth twins." width="100%"></p>
+
 - **Pick a Mars site** (InSight, Opportunity, Spirit, Perseverance, Curiosity). Earth lights up with its twin map and ten best regions.
 - **Dust Ring.** One year of dust drawn as a ring. Two rings overlaid show a match; turning the Earth ring shows the season shift.
 - **Test Card and Test Calendar.** For each twin: which Earth months line up with which Mars season, how well, what matches, and what can never match.
@@ -100,16 +78,6 @@ Two further analyses run on the same data:
 - **Ask a planning question.** An SI model looks the answer up in the app's data, points the globes at it and states a caveat.
 - **Story mode.** The InSight story in five beats, two of them hands-on. Add `?story=1` to the URL.
 
-<table>
-  <tr>
-    <td width="50%"><img src="deck/img/calendar.png" alt="A twin's test calendar: which Earth months line up with which Mars season."></td>
-    <td width="50%"><img src="deck/img/challenge.png" alt="Argue against this twin: an SI model gives the strongest reasons the match could fail, citing only checked figures."></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Test calendar for a twin</sub></td>
-    <td align="center"><sub>An SI model argues against the match</sub></td>
-  </tr>
-</table>
 
 ## Evidence, including what is weak
 

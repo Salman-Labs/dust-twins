@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@87.5,400;87.5,500&family=Schibsted+Grotesk:wght@400;500;600&display=block">
 <style>
   :root { --bg:#0b0a09; --ink:#efe9df; --dim:#a8a196; --mute:#7a746a; --mars:#d9694a; --earth:#8db8cc; --dust:#e6c07a; }
-  html,body { margin:0; position:relative; width:1280px; height:440px; background:var(--bg); overflow:hidden; font-family:"Schibsted Grotesk",system-ui,sans-serif; color:var(--ink); }
+  html, body { background:none; } .frame { position:relative; width:1280px; height:440px; background:var(--bg); overflow:hidden; border-radius:24px; } body { margin:0; width:1280px; height:440px; font-family:"Schibsted Grotesk",system-ui,sans-serif; color:var(--ink); }
   .img { position:absolute; right:0; top:0; width:760px; height:440px; background:url(insight_selfie.jpg) 55% 40%/cover; }
   .fade { position:absolute; inset:0; background:linear-gradient(90deg, var(--bg) 38%, rgba(11,10,9,.82) 52%, rgba(11,10,9,.25) 72%, rgba(11,10,9,.05)); }
   .fade2 { position:absolute; inset:0; background:linear-gradient(0deg, rgba(11,10,9,.85), rgba(11,10,9,0) 30%); }
@@ -16,7 +16,7 @@
   p b { color:var(--ink); font-weight:500; }
   .credit { position:absolute; right:24px; bottom:18px; font-size:12px; color:var(--mute); }
 </style></head>
-<body>
+<body><div class="frame">
   <div class="img"></div><div class="fade"></div><div class="fade2"></div>
   <div class="txt">
     <div class="logo">
@@ -31,4 +31,4 @@
     <p>Where on Earth does dust behave the way it does at a Mars landing site, <b>and in which months?</b></p>
   </div>
   <div class="credit">InSight's final selfie, April 2022 · NASA/JPL-Caltech</div>
-</body></html>
+</div></body></html>
