@@ -2,11 +2,11 @@
 
 **Project links**
 
-- **Live app:** [dust-twins.vercel.app](https://dust-twins.vercel.app)
-- **Story mode (guided 30-second walkthrough):** [dust-twins.vercel.app/?story=1](https://dust-twins.vercel.app/?story=1)
-- **Demo video (52 s):** [watch](https://dust-twins.vercel.app/media/dust-twins-local-60s.mp4)
-- **30-second video:** [watch](https://dust-twins.vercel.app/media/dust-twins-demo-30s.mp4)
-- **Slides (7):** [view in browser](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdust-twins.vercel.app%2Fmedia%2Fdust-twins-deck.pptx) · [download .pptx](https://dust-twins.vercel.app/media/dust-twins-deck.pptx)
+- **Live app:** [dust-twins-wyrd.vercel.app](https://dust-twins-wyrd.vercel.app)
+- **Story mode (guided 30-second walkthrough):** [dust-twins-wyrd.vercel.app/?story=1](https://dust-twins-wyrd.vercel.app/?story=1)
+- **Demo video (52 s):** [watch](https://dust-twins-wyrd.vercel.app/media/dust-twins-local-60s.mp4)
+- **30-second video:** [watch](https://dust-twins-wyrd.vercel.app/media/dust-twins-demo-30s.mp4)
+- **Slides (7):** [view in browser](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdust-twins-wyrd.vercel.app%2Fmedia%2Fdust-twins-deck.pptx) · [download .pptx](https://dust-twins-wyrd.vercel.app/media/dust-twins-deck.pptx)
 
 NASA Space Apps Challenge 2026 · Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars* · Islamabad
 
