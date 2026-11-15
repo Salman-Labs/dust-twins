@@ -178,10 +178,14 @@ function YearBar(props: { month: number; setMonth: (m: number) => void; playing:
   );
 }
 
-function Check({ ok, title, children }: { ok: boolean; title: string; children: React.ReactNode }) {
+type Level = "holds" | "moderate" | "weak";
+const LEVEL_LABEL: Record<Level, string> = { holds: "Holds", moderate: "Moderate", weak: "Weak" };
+
+function Check({ ok, level, title, children }: { ok?: boolean; level?: Level; title: string; children: React.ReactNode }) {
+  const l: Level = level ?? (ok ? "holds" : "weak");
   return (
     <div className="border-t border-line py-4">
-      <div className="flex items-baseline justify-between gap-3"><h4 className="text-[14px] font-medium">{title}</h4><span className={`text-[12px] ${ok ? "text-ok" : "text-warn"}`}>{ok ? "Holds" : "Weak"}</span></div>
+      <div className="flex items-baseline justify-between gap-3"><h4 className="text-[14px] font-medium">{title}</h4><span className={`text-[12px] ${l === "holds" ? "text-ok" : l === "moderate" ? "text-warn" : "text-mars"}`}>{LEVEL_LABEL[l]}</span></div>
       <div className="mt-1 text-[13px] leading-5 text-dim">{children}</div>
     </div>
   );
@@ -228,7 +232,8 @@ function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site
         <Check ok={e.shuffle.top10_above_null >= 8} title="Shuffle baseline">
           We scrambled the months of every Earth cell and matched again. The best 1% of scrambled matches score <N>{e.shuffle.null_p99}</N>; our top twin scores <N>{e.top_score}</N>. <N>{e.shuffle.top10_above_null} of 10</N> top twins beat that line, as do {e.shuffle.cells_above_null} of {e.shuffle.cells_scored} land cells
         </Check>
-        <Check ok={e.split_years.spearman >= 0.6} title="Split years">
+        {/* same bands as the README: 0.8 and up holds, 0.6 to 0.8 is moderate, below 0.6 is weak */}
+        <Check level={e.split_years.spearman >= 0.8 ? "holds" : e.split_years.spearman >= 0.6 ? "moderate" : "weak"} title="Split years">
           Twins found from odd years alone and from even years alone, on both planets. Rank agreement <N>{e.split_years.spearman}</N> where 1 is identical; <N>{pct(e.split_years.top50_overlap)}</N> of the top 50 cells appear in both
         </Check>
         <Check ok={e.mars_self_test.neighbour_percentile >= 0.9} title="Mars-to-Mars self test">
