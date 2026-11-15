@@ -1,23 +1,11 @@
 # Pre-registered expectations
 
-Written by the team BEFORE the matching code was run. This file is committed first; results are committed after.
-Fill in below, then tell the builder to commit. Do not edit after results exist.
+**We did not write our expectations down before running the analysis.**
 
-## Which Earth regions do we expect to rank highest, and why?
+This file was set up for that before the matching code ran, and it stayed empty. We are not filling it in afterwards, because expectations written after seeing the results would not be a fair test.
 
-InSight (Elysium Planitia):
-1.
-2.
-3.
+The same statement appears in the app's Evidence panel ("What we expected before running it") and in the README's evidence table (Pre-registration: No).
 
-Opportunity (Meridiani Planum):
-1.
-2.
-3.
+What this means for the results: the checks we did run (shuffle baseline, split years, weight robustness, rover ground truth, storm-year detector, dust regimes) were all reported whichever way they came out, but none of them was decided in advance. Read the twins as hypotheses to test on site, not as confirmed findings.
 
-## What would count as a failed result?
-
-(for example: top twins do not beat the shuffled-season baseline; top twins change completely between odd and even years)
-
-## Anything we expect NOT to match?
-
+Next time we would record, before running: which Earth regions we expect to rank highest for each Mars site, what result would count as a failure, and what we expect not to match.

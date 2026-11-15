@@ -67,7 +67,7 @@ await page.waitForTimeout(350);
 await ev(() => {
   const h = window.byText("h4", "Rover ground truth"); h.scrollIntoView({ block: "start" }); document.querySelector("main").scrollTop = 0; scrollTo(0, 0);
   const box = h.closest('[role="dialog"]'); box.scrollTop -= 14;
-  window.lookAt(h.closest("div.border-t"), 760, -18); window.cap("Checked against the rovers' own dust readings");
+  window.lookAt(h.closest("div.border-t"), 760, -18); window.cap("The Mars dust record matches the rovers' own readings");
 });
 await at(start[6] - 0.3);
 // 7. end card

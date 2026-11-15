@@ -6,6 +6,7 @@
 // Abuse guards: short inputs, capped tool steps and output, per-IP rate limit on the shared key,
 // read-only tools, narrow system prompt. Visitors can send their own key in x-user-key; it is used
 // for that one request and never stored or logged.
+import type { FamousSite } from "@/lib/types";
 import evidenceFile from "@/public/data/evidence.json";
 import sitesFile from "@/public/data/mars_sites.json";
 import tCuriosity from "@/public/data/twins_curiosity.json";
@@ -77,6 +78,7 @@ const checkFacts = (id: string) => {
     mars_neighbours_percentile: e.mars_self_test.neighbour_percentile, pressure_choice_rank_agreement: e.pressure_sensitivity.spearman,
     rover_vs_orbit_correlation: e.rover?.r ?? null, rover_month_stretches_compared: e.rover?.n ?? null,
     top10_in_same_dust_regime: e.same_regime_in_top10, top10_famous_sites: e.famous_in_top10,
+    famous_analog_sites: (EV.famous_sites as FamousSite[] | undefined)?.map((f) => ({ name: f.name, earth_cells_scored: f.scored, cells_above_shuffled_baseline: f.above_baseline[id] ?? 0 })) ?? null,
     expectations_registered_before_the_run: "no",
     storm_year_detector: { mars_years_flagged: EV.storm_years.found, known_global_storm_years: EV.storm_years.known, earth_years_flagged: EV.storm_years.earth_flagged },
   };

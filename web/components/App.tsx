@@ -7,9 +7,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import DustRing from "./DustRing";
 import Story from "./Story";
 import Guide, { pointAt } from "./Guide";
+import Hook from "./Hook";
 import { Ask, Challenge } from "./Planner";
 import type { Marker } from "./Scene";
-import { type Evidence, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
+import { type Evidence, type FamousSite, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
@@ -115,7 +116,7 @@ function TwinList({ file, ti, setTi }: { file: TwinFile; ti: number | null; setT
       </ol>
       <div className="mt-3 flex items-center justify-between px-3 text-[12px] text-mute">
         <span>Line length: match above the shuffled baseline</span>
-        <button onClick={() => setAll((a) => !a)} className="text-dim underline decoration-line underline-offset-4 hover:text-ink">{all ? "Top 5" : `All ${file.twins.length}`}</button>
+        <button onClick={() => setAll((a) => !a)} className="-my-3 -mr-2 inline-flex min-h-11 items-center px-2 text-dim underline decoration-line underline-offset-4 hover:text-ink">{all ? "Top 5" : `All ${file.twins.length}`}</button>
       </div>
     </>
   );
@@ -177,12 +178,33 @@ function YearBar(props: { month: number; setMonth: (m: number) => void; playing:
   );
 }
 
-function Check({ ok, title, children }: { ok: boolean; title: string; children: React.ReactNode }) {
+type Level = "holds" | "moderate" | "weak";
+const LEVEL_LABEL: Record<Level, string> = { holds: "Holds", moderate: "Moderate", weak: "Weak" };
+
+function Check({ ok, level, title, children }: { ok?: boolean; level?: Level; title: string; children: React.ReactNode }) {
+  const l: Level = level ?? (ok ? "holds" : "weak");
   return (
     <div className="border-t border-line py-4">
-      <div className="flex items-baseline justify-between gap-3"><h4 className="text-[14px] font-medium">{title}</h4><span className={`text-[12px] ${ok ? "text-ok" : "text-warn"}`}>{ok ? "Holds" : "Weak"}</span></div>
+      <div className="flex items-baseline justify-between gap-3"><h4 className="text-[14px] font-medium">{title}</h4><span className={`text-[12px] ${l === "holds" ? "text-ok" : l === "moderate" ? "text-warn" : "text-mars"}`}>{LEVEL_LABEL[l]}</span></div>
       <div className="mt-1 text-[13px] leading-5 text-dim">{children}</div>
     </div>
+  );
+}
+
+const andList = (a: string[]) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
+
+/** Where the challenge's famous analog sites land under this method (pipeline/famous_check.py). */
+function FamousCheck({ sites, site, N }: { sites: FamousSite[]; site: Site; N: (p: { children: React.ReactNode }) => React.ReactElement }) {
+  const hit = sites.filter((f) => f.above_baseline[site.id] > 0);
+  const below = sites.filter((f) => f.scored > 0 && !(f.above_baseline[site.id] > 0));
+  const unscored = sites.filter((f) => f.scored === 0);
+  return (
+    <Check ok={hit.length === 0} title="Famous analog sites">
+      The challenge asks teams to look beyond {andList(sites.map((f) => f.name))}. <N>{hit.length} of {sites.length}</N> keep {site.place}&apos;s dust year here.
+      {below.map((f) => <span key={f.name}> {f.name}&apos;s <N>{f.scored}</N> scored cells all fall below the scrambled-seasons line.</span>)}
+      {unscored.length > 0 && <> {andList(unscored.map((f) => f.name))} have too little dust in the air, or are mostly ocean or ice at this grid size, to be scored at all.</>}
+      {hit.length > 0 && <> {andList(hit.map((f) => f.name))} {hit.length === 1 ? "clears" : "clear"} the line.</>}
+    </Check>
   );
 }
 
@@ -227,7 +249,8 @@ function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site
         <Check ok={e.shuffle.top10_above_null >= 8} title="Shuffle baseline">
           We scrambled the months of every Earth cell and matched again. The best 1% of scrambled matches score <N>{e.shuffle.null_p99}</N>; our top twin scores <N>{e.top_score}</N>. <N>{e.shuffle.top10_above_null} of 10</N> top twins beat that line, as do {e.shuffle.cells_above_null} of {e.shuffle.cells_scored} land cells
         </Check>
-        <Check ok={e.split_years.spearman >= 0.6} title="Split years">
+        {/* same bands as the README: 0.8 and up holds, 0.6 to 0.8 is moderate, below 0.6 is weak */}
+        <Check level={e.split_years.spearman >= 0.8 ? "holds" : e.split_years.spearman >= 0.6 ? "moderate" : "weak"} title="Split years">
           Twins found from odd years alone and from even years alone, on both planets. Rank agreement <N>{e.split_years.spearman}</N> where 1 is identical; <N>{pct(e.split_years.top50_overlap)}</N> of the top 50 cells appear in both
         </Check>
         <Check ok={e.mars_self_test.neighbour_percentile >= 0.9} title="Mars-to-Mars self test">
@@ -242,6 +265,7 @@ function EvidencePanel({ ev, site, expectations, onClose }: { ev: Evidence; site
         <Check ok={e.same_regime_in_top10 >= 5} title="Dust regimes">
           Grouping every cell on both planets by the shape of its dust year gives {ev.regimes.meta.k} regimes (cluster separation {ev.regimes.meta.silhouette[String(ev.regimes.meta.k)]}, which is loose: the regimes shade into each other). {site.place} sits in a regime that covers <N>{pct(ev.regimes.regimes[site.regime].mars_share)}</N> of Mars and only <N>{pct(ev.regimes.regimes[site.regime].earth_share)}</N> of Earth&apos;s dusty land. <N>{e.same_regime_in_top10} of 10</N> top twins fall in it
         </Check>
+        {ev.famous_sites && <FamousCheck sites={ev.famous_sites} site={site} N={N} />}
         {e.rover && (
           <Check ok={e.rover.r >= 0.7} title="Rover ground truth">
             {site.name} measured the dust in its own sky. Across <N>{e.rover.n}</N> month-sized stretches, its readings and the orbital record at this cell correlate at <N>{e.rover.r}</N>. Each line is scaled to its own average because the two instruments see different wavelengths
@@ -275,6 +299,7 @@ export default function App() {
   const [err, setErr] = useState<string | null>(null);
   const [layer, setLayer] = useState<"match" | "regime">("match");
   const [guide, setGuide] = useState(false);
+  const [hook, setHook] = useState(false);
   const pending = useRef<number | null>(null);
   const [story, setStory] = useState<number | null>(null);
   const [auto, setAuto] = useState(false);
@@ -283,7 +308,7 @@ export default function App() {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const q = new URLSearchParams(window.location.search);
     if (q.has("story")) { setStory(0); setAuto(q.get("story") === "auto"); }
-    else { try { if (!localStorage.getItem("dust-twins-seen")) setGuide(true); } catch { /* private mode: skip the first-visit guide */ } }
+    else { try { if (!localStorage.getItem("dust-twins-seen")) setHook(true); } catch { /* private mode: skip the first-visit hook */ } }
     fetch("/data/mars_sites.json").then((r) => r.json()).then((d) => setSites(d.sites)).catch(() => setErr("Could not load the data files"));
     fetch("/data/evidence.json").then((r) => r.json()).then(setEv).catch(() => {});
     fetch("/data/expectations.txt").then((r) => (r.ok ? r.text() : null)).then(setExpectations).catch(() => {});
@@ -307,6 +332,7 @@ export default function App() {
 
   // the guide counts as seen once it has been closed, not merely shown
   const closeGuide = () => { setGuide(false); try { localStorage.setItem("dust-twins-seen", "1"); } catch { /* ignore */ } };
+  const closeHook = () => { setHook(false); try { localStorage.setItem("dust-twins-seen", "1"); } catch { /* ignore */ } };
 
   const site = sites.find((s) => s.id === siteId) ?? null;
   const twin = file && ti != null ? file.twins[ti] : null;
@@ -462,7 +488,7 @@ export default function App() {
               <Challenge site={site.id} rank={(ti ?? 0) + 1} twinName={twin.near} />
             </Section>
 
-            <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
+            <Section title="Two rings, one year" aside={<button onClick={() => setAligned((a) => !a)} className="-my-3 -mr-2 inline-flex min-h-11 items-center px-2 text-[12px] text-dim underline decoration-line underline-offset-4 hover:text-ink">{aligned ? "Show raw calendar" : "Line up the seasons"}</button>}>
               <div className="-mx-2 flex justify-center">
                 <DustRing mars={site.shape} earth={twin.shape} shift={twin.shift} aligned={aligned} highlight={month} size={280}
                   title={`Dust rings for ${site.place} (Mars) and ${twin.place} (Earth)`} />
@@ -490,6 +516,7 @@ export default function App() {
       </aside>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}
+      {hook && <Hook onExplore={closeHook} onStory={() => { closeHook(); setAuto(false); setStory(0); }} onGuide={() => { closeHook(); setGuide(true); }} />}
       {guide && <Guide onClose={closeGuide} onStory={() => { closeGuide(); setAuto(false); setStory(0); }} />}
       {showEv && ev && site && <EvidencePanel ev={ev} site={site} expectations={expectations} onClose={() => setShowEv(false)} />}
     </main>
