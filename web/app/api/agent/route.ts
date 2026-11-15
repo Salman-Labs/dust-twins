@@ -16,7 +16,7 @@ import tSpirit from "@/public/data/twins_spirit.json";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Low thinking: with the default, reasoning ate the output budget and replies took 20 to 50 seconds.
-const MODEL = "gemini-flash-latest";
+const MODEL = "gemini-flash-lite-latest";   // the lite model: several times cheaper and faster, so a public demo can take many visitors
 const API = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 const SITES: any[] = (sitesFile as any).sites;
 const EV: any = evidenceFile;
@@ -50,9 +50,18 @@ const twinBrief = (t: any, i: number) => ({
   winds: t.wind_tag, same_dust_regime_as_site: t.same_regime, beats_shuffled_baseline: t.beats_null, known_famous_analog: t.famous,
 });
 
+const PART_NAMES: Record<string, string> = { season: "seasonal shape", storminess: "storminess", haze: "usual haze rank", variability: "year-to-year swing" };
+function weakest(t: any, strongest = false) {
+  const [k, v] = Object.entries(t.components as Record<string, number>).sort((a, b) => (strongest ? b[1] - a[1] : a[1] - b[1]))[0];
+  return `${PART_NAMES[k]} at ${v}`;
+}
+
 const twinFacts = (t: any, i: number) => ({
   ...twinBrief(t, i), lat: t.lat, lon: t.lon, dust_regime: REGIMES[t.regime].name,
   match_by_part: { seasonal_shape: t.components.season, storminess: t.components.storminess, usual_haze_rank: t.components.haze, year_to_year_swing: t.components.variability },
+  // stated outright so the model never has to compare numbers itself (the lite model gets comparisons wrong)
+  weakest_part_of_the_match: weakest(t), strongest_part_of_the_match: weakest(t, true),
+  month_that_strays_most_often: MONTHS[t.off_years.indexOf(Math.max(...t.off_years))], years_that_month_strayed: Math.max(...t.off_years),
   earth_year_turned_by_months: t.shift,
   pattern_match_by_month: Object.fromEntries(MONTHS.map((m, j) => [m, t.month_match[j]])),
   years_each_month_strayed_from_normal: Object.fromEntries(MONTHS.map((m, j) => [m, t.off_years[j]])), years_of_record: t.n_years,
@@ -68,7 +77,7 @@ const checkFacts = (id: string) => {
     mars_neighbours_percentile: e.mars_self_test.neighbour_percentile, pressure_choice_rank_agreement: e.pressure_sensitivity.spearman,
     rover_vs_orbit_correlation: e.rover?.r ?? null, rover_month_stretches_compared: e.rover?.n ?? null,
     top10_in_same_dust_regime: e.same_regime_in_top10, top10_famous_sites: e.famous_in_top10,
-    pre_registered_expectations: "none were registered before the run",
+    expectations_registered_before_the_run: "no",
     storm_year_detector: { mars_years_flagged: EV.storm_years.found, known_global_storm_years: EV.storm_years.known, earth_years_flagged: EV.storm_years.earth_flagged },
   };
 };
@@ -137,7 +146,8 @@ async function challenge(key: string, siteId: string, rank: number) {
       "Copy figures exactly; you may write a share between 0 and 1 as a percentage, but do no other arithmetic and state no figure that is not in FACTS. " +
       "Write for a field engineer in plain words: never write a field name or anything with an underscore, describe what the figure measures instead. " +
       "Keep each title under 8 words and each detail under 45 words. " +
-      "Prefer the weakest evidence: low agreement between odd and even years, a different dust regime or wind, months that stray often, the part of the match that scores lowest, missing pre-registration. " +
+      "Prefer the weakest evidence: low agreement between odd and even years, a different dust regime or wind, the month that strays most often, the weakest part of the match (use the one FACTS names; do not work it out yourself), no expectations registered before the run. " +
+      "Never say one figure is higher or lower than another unless FACTS says so. " +
       "In `figures`, list each figure you used as a short plain label and its value, for example 'Split-years agreement: 0.67'. " +
       "Then, in `settle`, one sentence under 30 words on what would have to be measured on site to settle the question." }] }],
     generationConfig: {

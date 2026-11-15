@@ -172,7 +172,7 @@ export default function Scene(props: {
   const refs = useRef(new Map<string, THREE.Object3D>());
   const register = (k: string, o: THREE.Object3D | null) => { if (o) refs.current.set(k, o); else refs.current.delete(k); };
   return (
-    <Canvas camera={{ fov: 35, position: [0, 0, 9] }} dpr={[1, 2]} gl={{ antialias: true }}>
+    <Canvas camera={{ fov: 35, position: [0, 0, 9] }} dpr={[1, 2]} gl={{ antialias: true }} resize={{ scroll: false }}>
       <ambientLight intensity={1.15} />
       <directionalLight position={[2, 3, 6]} intensity={1.6} />
       <Stars radius={60} depth={40} count={1400} factor={2.4} fade speed={0} />
