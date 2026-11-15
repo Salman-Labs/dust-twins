@@ -319,9 +319,9 @@ export default function App() {
 
   const actions = (
     <div className="flex gap-2">
-      <button onClick={() => { setAuto(false); setStory(0); }} className="row flex h-9 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-3.5 text-[13px] font-medium text-bg hover:bg-white"><PlayIcon />Play the story</button>
-      <button onClick={() => setShowEv(true)} disabled={!ev || !site} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">Evidence</button>
-      <button onClick={() => setGuide(true)} className="row h-9 whitespace-nowrap rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12]">How it works</button>
+      <button onClick={() => { setAuto(false); setStory(0); }} className="row flex h-9 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-3.5 text-[13px] font-medium text-bg hover:bg-white max-md:px-2.5"><PlayIcon /><span className="max-md:hidden">Play the story</span><span className="md:hidden">Story</span></button>
+      <button onClick={() => setShowEv(true)} disabled={!ev || !site} className="row h-9 rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12] max-md:px-2.5">Evidence</button>
+      <button onClick={() => setGuide(true)} className="row h-9 whitespace-nowrap rounded-lg bg-white/[0.07] px-3.5 text-[13px] font-medium hover:bg-white/[0.12] max-md:px-2.5"><span className="max-md:hidden">How it works</span><span className="md:hidden">Guide</span></button>
     </div>
   );
 
@@ -383,8 +383,8 @@ export default function App() {
             marsFrame={twin ? twin.mars_bin[month] : month} earthFrame={month} showHaze={playing}
             threadFrom={site ? `m-${site.id}` : null} threadTo={twin ? `e-${siteId}-${ti}` : null} reducedMotion={reduced} />
         </div>
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4 md:hidden">
-          <h1 className="text-[18px] font-semibold">Dust Twins</h1>
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3 md:hidden">
+          <h1 className="whitespace-nowrap text-[16px] font-semibold">Dust Twins</h1>
           <div className="pointer-events-auto">{actions}</div>
         </div>
         <div className="absolute left-1/2 top-14 z-10 flex -translate-x-1/2 gap-1 rounded-lg bg-white/[0.06] p-1 max-md:hidden" role="group" aria-label="Map layer">
