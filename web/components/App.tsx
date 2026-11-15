@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import DustRing from "./DustRing";
 import Story from "./Story";
 import Guide, { pointAt } from "./Guide";
+import Hook from "./Hook";
 import { Ask, Challenge } from "./Planner";
 import type { Marker } from "./Scene";
 import { type Evidence, type Regime, type Site, type Twin, type TwinFile, MONTHS, fmtLatLon, lsRange, marsSeason } from "@/lib/types";
@@ -275,6 +276,7 @@ export default function App() {
   const [err, setErr] = useState<string | null>(null);
   const [layer, setLayer] = useState<"match" | "regime">("match");
   const [guide, setGuide] = useState(false);
+  const [hook, setHook] = useState(false);
   const pending = useRef<number | null>(null);
   const [story, setStory] = useState<number | null>(null);
   const [auto, setAuto] = useState(false);
@@ -283,7 +285,7 @@ export default function App() {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const q = new URLSearchParams(window.location.search);
     if (q.has("story")) { setStory(0); setAuto(q.get("story") === "auto"); }
-    else { try { if (!localStorage.getItem("dust-twins-seen")) setGuide(true); } catch { /* private mode: skip the first-visit guide */ } }
+    else { try { if (!localStorage.getItem("dust-twins-seen")) setHook(true); } catch { /* private mode: skip the first-visit hook */ } }
     fetch("/data/mars_sites.json").then((r) => r.json()).then((d) => setSites(d.sites)).catch(() => setErr("Could not load the data files"));
     fetch("/data/evidence.json").then((r) => r.json()).then(setEv).catch(() => {});
     fetch("/data/expectations.txt").then((r) => (r.ok ? r.text() : null)).then(setExpectations).catch(() => {});
@@ -307,6 +309,7 @@ export default function App() {
 
   // the guide counts as seen once it has been closed, not merely shown
   const closeGuide = () => { setGuide(false); try { localStorage.setItem("dust-twins-seen", "1"); } catch { /* ignore */ } };
+  const closeHook = () => { setHook(false); try { localStorage.setItem("dust-twins-seen", "1"); } catch { /* ignore */ } };
 
   const site = sites.find((s) => s.id === siteId) ?? null;
   const twin = file && ti != null ? file.twins[ti] : null;
@@ -490,6 +493,7 @@ export default function App() {
       </aside>
 
       {story != null && <Story step={story} setStep={setStory} site={site} twin={twin} auto={auto} ev={ev} openEvidence={() => { setStory(null); setShowEv(true); }} />}
+      {hook && <Hook onExplore={closeHook} onStory={() => { closeHook(); setAuto(false); setStory(0); }} onGuide={() => { closeHook(); setGuide(true); }} />}
       {guide && <Guide onClose={closeGuide} onStory={() => { closeGuide(); setAuto(false); setStory(0); }} />}
       {showEv && ev && site && <EvidencePanel ev={ev} site={site} expectations={expectations} onClose={() => setShowEv(false)} />}
     </main>
